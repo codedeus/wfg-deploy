@@ -1,0 +1,25 @@
+{
+  "MY_PATIENT":{
+    "RECORD_VISIT":"Record Visit",
+    "ADMIT":"Admit",
+    "WARD_TRANSFER":"Ward Transfer",
+    "DISCHARGE":"Discharge",
+    "RAISE_BILL":"Raise Bill",
+    "PAYMENT":"Payment",
+    "LAST_VISIT":"Last Visit",
+    "ADMISSION":"Admission",
+    "CLINICAL_VISIT":"Clinical Visit",
+    "WARD_NUMBER":"Ward Number",
+    "BED_NUMBER":"Bed Number",
+    "DIAGNOSIS":"Diagnosis",
+    "HEIGHT":"Height",
+    "WEIGHT":"Weight",
+    "BMI":"BMI",
+    "TEMPERATURE":"Temperature",
+    "PULSE_RATE":"Pulse Rate",
+    "RESPIRATORY_RATE":"Respiratory Rate",
+    "SYSTOLIC_BP":"Systolic BP",
+    "DIASTOLIC_BP":"Diastolic BP",
+    "NO_PATIENT_SELECTED":"No Patient Selected<br>Please Select a patient from the side menu"
+  }
+}

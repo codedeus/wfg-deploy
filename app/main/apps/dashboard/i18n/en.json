@@ -1,0 +1,12 @@
+{
+  "BIOCARD":{
+    "PATIENT_NUMBER":"Patient No",
+    "AGE":"Age",
+    "RELIGION":"Religion",
+    "PHONE_NUMBER":"Phone No",
+    "ETHNIC_GROUP":"Ethnic Group",
+    "GENDER":"Gender",
+    "MARITAL_STATUS":"Marital Status",
+    "DATE_OF_BIRTH":"DOB"
+  }
+}

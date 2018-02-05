@@ -1,0 +1,27 @@
+{
+    "REGISTER_V2": {
+        "INTRO_TITLE": "Welcome to the WorkForce Group",
+        "INTRO_DESCRIPTION": "We are the go-to outsourcing services provider in Nigeria.",
+        "TITLE": "Create an account",
+        "DESCRIPTION": "Sed mollis velit facilisis facilisis viverra",
+        "FIRSTNAME": "First Name",
+        "LASTNAME": "Last Name",
+        "EMAIL": "Email",
+        "PASSWORD": "Password",
+        "PASSWORD_CONFIRM": "Password (Confirm)",
+        "READ_ACCEPT": "I read and accept",
+        "TERMS_COND": "terms and conditions",
+        "CREATE_ACCOUNT": "CREATE MY ACCOUNT",
+        "ALREADY_HAVE": "Already have an account?",
+        "LOGIN": "Log in",
+        "ERRORS": {
+            "FIRSTNAME_REQUIRED": "First Name field is required",
+            "EMAIL_REQUIRED": "Email field is required",
+            "EMAIL_MUST_VALID": "Email must be a valid e-mail address",
+            "PASSWORD_REQUIRED": "Password field is required",
+            "LASTNAME_REQUIRED": "Last Name field is required",
+            "PASSWORD_CONFIRM_REQUIRED": "Password confirm field is required",
+            "TERMS_REQUIRED": "You must accept terms and conditions before submitting the form"
+        }
+    }
+}
