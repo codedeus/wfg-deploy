@@ -1,105 +1,3 @@
-(function() {
-  "use strict";
-
-  config.$inject = ["$stateProvider", "$translatePartialLoaderProvider"];
-  angular.module("app.appraisals.manageappraisal", []).config(config)
-
-  function config($stateProvider, $translatePartialLoaderProvider) {
-    $stateProvider.state("app.manageappraisal", {
-      url: "/manageappraisal",
-      data: {
-        name: "Manage Appraisal",
-        role: "manageappraisal"
-      },
-      views: {
-        "content@app": {
-          templateUrl:
-            "app/main/apps/appraisals/manageappraisal/manageappraisal.html",
-          controller: "ManageAppraisalController as vm"
-        }
-      }
-    })
-
-    $translatePartialLoaderProvider.addPart("app/main/apps/appraisals/manageappraisal");
-  }
-})();
-
-(function() {
-  "use strict";
-
-  DeclineAppraisalController.$inject = ["$mdDialog", "selectedMail"];
-  angular
-    .module("app.appraisals.manageappraisal")
-    .controller("DeclineAppraisalController", DeclineAppraisalController)
-
-  /** @ngInject */
-  function DeclineAppraisalController($mdDialog, selectedMail) {
-    var vm = this;
-
-    // Data
-    vm.form = {
-      from: "johndoe@creapond.com"
-    }
-
-    vm.hiddenCC = true;
-    vm.hiddenBCC = true;
-
-    // If replying
-    if (angular.isDefined(selectedMail)) {
-      vm.form.to = selectedMail.from.email;
-      vm.form.subject = "RE: " + selectedMail.subject;
-      vm.form.message = "<blockquote>" + selectedMail.message + "</blockquote>";
-    }
-
-    // Methods
-    vm.closeDialog = closeDialog;
-
-    //////////
-
-    function closeDialog() {
-      $mdDialog.hide();
-    }
-  }
-})();
-
-(function() {
-  "use strict";
-
-  AcceptAppraisalController.$inject = ["$mdDialog", "selectedMail"];
-  angular
-    .module("app.appraisals.manageappraisal")
-    .controller("AcceptAppraisalController", AcceptAppraisalController)
-
-  /** @ngInject */
-  function AcceptAppraisalController($mdDialog, selectedMail) {
-    var vm = this;
-
-    // Data
-    vm.form = {
-      from: "johndoe@creapond.com"
-    }
-
-    vm.hiddenCC = true;
-    vm.hiddenBCC = true;
-
-    // If replying
-    if (angular.isDefined(selectedMail)) {
-      vm.form.to = selectedMail.from.email;
-      vm.form.subject = "RE: " + selectedMail.subject;
-      vm.form.message = "<blockquote>" + selectedMail.message + "</blockquote>";
-    }
-
-    // Methods
-    vm.closeDialog = closeDialog;
-
-    //////////
-
-    function closeDialog() {
-      $mdDialog.hide();
-    }
-  }
-})();
-
 (function ()
 {
     'use strict';
@@ -348,7 +246,7 @@
               url:'/employeelist',
               data:{
                   name:'Employee List',
-                  role:'employeelist'
+                  roles: ['SUPER_ADMIN', 'TOP_MANAGER','HR']
               },
               views:{
                 'content@app':{
@@ -364,28 +262,83 @@
   'use strict';
 
   angular.module('app.settings.employeelist').
-      controller('EmployeeListController',["AppConstants", "$http", "$scope", "$rootScope", "UtilityService", function(AppConstants,$http,$scope,$rootScope,UtilityService){
+      controller('EmployeeListController',["AppConstants", "$http", "$scope", "$rootScope", "UtilityService", "$mdDialog", function(AppConstants,$http,$scope,$rootScope,UtilityService,$mdDialog){
         var vm = this;
 
         vm.uploadTemlate = function(){
-          debugger;
-          console.log($rootScope.employeeList);
+
+          $rootScope.processingRequest = true;
+
+          $http.post(AppConstants.baseApiUrl+'users/upload',$rootScope.employeeList).then(function(response){
+            $rootScope.employeeList = null;
+            if (response.data.length > 0) {
+
+              var parentEl = angular.element(document.querySelector('md-content'));
+
+              alert = $mdDialog.alert({
+                  parent: parentEl,
+                  //  targetEvent: $event,
+                  template: '<md-dialog aria-label="Sample Dialog">' +
+                  '  <md-content>' +
+                  '    <md-list>' +
+                  '      <md-item ng-repeat="item in ctrl.items track by $index">' +
+                  '       <p>{{$index+1 +": "+item.comment+" (" + item.email+")"}}</p>' +
+                  '      </md-item>' +
+                  '    </md-list>' +
+                  '  </md-content>' +
+                  '  <div class="md-actions">' +
+                  '    <md-button ng-click="ctrl.closeDialog()">' +
+                  '      Ok Got it.' +
+                  '    </md-button>' +
+                  '  </div>' +
+                  '</md-dialog>',
+                  locals: {
+
+                      items: response.data,
+                      closeDialog: $scope.closeDialog
+                  },
+                  bindToController: true,
+                  controllerAs: 'ctrl',
+                  controller: 'ErrorDialogController'
+              }).title("Incomplete/Incorrect Entry");
+
+              $mdDialog
+                  .show(alert)
+                  .finally(function () {
+                      alert = undefined;
+                  });
+                  $rootScope.processingRequest = false;
+              //alert(status);
+
+          }
+          else{
+            $rootScope.processingRequest = false;
+            UtilityService.showAlert('success!','list uploaded sucessfully','Alert Dialog');
+          }
+          },function(){
+            $rootScope.processingRequest = false;
+            $rootScope.employeeList = null;
+          });
         };
+
+        $scope.closeDialog = function() {
+          $mdDialog.cancel();
+      };
 
         vm.templateData = [{
           firstname: '',
           lastname: '',
           email: '',
           lob: '',
-          role: '',
-          recruitmentDate: '',
-          location: ''
+          role: ''
       }];
 
       vm.downloadTemlate = function() {
         UtilityService.exportToExcel('employeelisttemplate', vm.templateData);
       };
-    }]);
+    }]).controller('ErrorDialogController',function(){
+
+    });
 })();
 
 (function(){
@@ -400,7 +353,7 @@
               url:'/newappraisal',
               data:{
                   name:'New Appraisal',
-                  role:'newappraisal'
+                  roles: ['ADMIN','USER', 'SUPER_ADMIN', 'LINE_MANAGER']
               },
               views:{
                 'content@app':{
@@ -607,6 +560,32 @@
 (function() {
   "use strict";
 
+  config.$inject = ["$stateProvider", "$translatePartialLoaderProvider"];
+  angular.module("app.appraisals.manageappraisal", []).config(config)
+
+  function config($stateProvider, $translatePartialLoaderProvider) {
+    $stateProvider.state("app.manageappraisal", {
+      url: "/manageappraisal",
+      data: {
+        name: "Manage Appraisal",
+        roles: ['ADMIN', 'SUPER_ADMIN', 'LINE_MANAGER', 'TOP_MANAGER','HR']
+      },
+      views: {
+        "content@app": {
+          templateUrl:
+            "app/main/apps/appraisals/manageappraisal/manageappraisal.html",
+          controller: "ManageAppraisalController as vm"
+        }
+      }
+    });
+
+    $translatePartialLoaderProvider.addPart("app/main/apps/appraisals/manageappraisal");
+  }
+})();
+
+(function() {
+  "use strict";
+
   angular
     .module("app.appraisals.manageappraisal")
     .controller("ManageAppraisalController", ["$scope", "$mdDialog", "$document", "$http", "AppConstants", "UtilityService", "$rootScope", function(
@@ -621,7 +600,9 @@
       var vm = this;
 
       $scope.selected = [];
-      $scope.users = [];
+      $scope.employees = [];
+
+      vm.appraisalStatus = 'pending';
 
       function getPendingAppraisals(){
         $rootScope.processingRequest = true;
@@ -706,7 +687,7 @@
           url: '/dashboard',
           data: {
               role: 'dashboard',
-              name: 'My Profile'
+              roles: ['ADMIN', 'SUPER_ADMIN', 'LINE_MANAGER', 'TOP_MANAGER','HR','USER']
           },
           views: {
               'content@app': {
@@ -4409,6 +4390,49 @@
 {
     'use strict';
 
+    angular
+        .module('app.core')
+        .directive('msCard', msCardDirective);
+
+    /** @ngInject */
+    function msCardDirective()
+    {
+        return {
+            restrict: 'E',
+            scope   : {
+                templatePath: '=template',
+                card        : '=ngModel',
+                vm          : '=viewModel'
+            },
+            template: '<div class="ms-card-content-wrapper" ng-include="templatePath" onload="cardTemplateLoaded()"></div>',
+            compile : function (tElement)
+            {
+                // Add class
+                tElement.addClass('ms-card');
+
+                return function postLink(scope, iElement)
+                {
+                    // Methods
+                    scope.cardTemplateLoaded = cardTemplateLoaded;
+
+                    //////////
+
+                    /**
+                     * Emit cardTemplateLoaded event
+                     */
+                    function cardTemplateLoaded()
+                    {
+                        scope.$emit('msCard::cardTemplateLoaded', iElement);
+                    }
+                };
+            }
+        };
+    }
+})();
+(function ()
+{
+    'use strict';
+
     msDatepickerFix.$inject = ["msDatepickerFixConfig"];
     angular
         .module('app.core')
@@ -4477,49 +4501,6 @@
             {
                 ngModel.$formatters.unshift(msDatepickerFixConfig.formatter); // to view
                 ngModel.$parsers.unshift(msDatepickerFixConfig.parser); // to model
-            }
-        };
-    }
-})();
-(function ()
-{
-    'use strict';
-
-    angular
-        .module('app.core')
-        .directive('msCard', msCardDirective);
-
-    /** @ngInject */
-    function msCardDirective()
-    {
-        return {
-            restrict: 'E',
-            scope   : {
-                templatePath: '=template',
-                card        : '=ngModel',
-                vm          : '=viewModel'
-            },
-            template: '<div class="ms-card-content-wrapper" ng-include="templatePath" onload="cardTemplateLoaded()"></div>',
-            compile : function (tElement)
-            {
-                // Add class
-                tElement.addClass('ms-card');
-
-                return function postLink(scope, iElement)
-                {
-                    // Methods
-                    scope.cardTemplateLoaded = cardTemplateLoaded;
-
-                    //////////
-
-                    /**
-                     * Emit cardTemplateLoaded event
-                     */
-                    function cardTemplateLoaded()
-                    {
-                        scope.$emit('msCard::cardTemplateLoaded', iElement);
-                    }
-                };
             }
         };
     }
@@ -14421,9 +14402,9 @@ $templateCache.put("app/toolbar/layouts/horizontal-navigation/toolbar.html","<di
 $templateCache.put("app/toolbar/layouts/vertical-navigation/toolbar.html","<div layout=\"row\" class=\"navigation-header\" layout-align=\"start center\" style=\"height: 48px\"><div layout=\"row\" \nlayout-align=\"start center\" flex><md-button id=\"navigation-toggle\" class=\"md-icon-button\" \nng-click=\"vm.toggleSidenav(\'navigation\')\" hide-gt-sm aria-label=\"Toggle navigation\" translate \ntranslate-attr-aria-label=\"TOOLBAR.TOGGLE_NAVIGATION\"><md-icon md-font-icon=\"icon-menu\" class=\"icon\"></md-icon>\n</md-button><div class=\"form-title\" style=\"margin-left: 15px;font-size: 21px\">{{vm.pageTitle}}</div></div><div \nlayout=\"row\" layout-align=\"start center\"><md-menu-bar id=\"user-menu\"><md-menu md-position-mode=\"left bottom\"><md-button\n class=\"user-button\" ng-click=\"$mdOpenMenu()\" aria-label=\"User settings\" translate \ntranslate-attr-aria-label=\"TOOLBAR.USER_SETTINGS\"><div layout=\"row\" layout-align=\"space-between center\"><div \nclass=\"avatar-wrapper\"><img md-menu-align-target class=\"avatar\" src=\"assets/images/avatars/profile.jpg\"><md-icon \nmd-font-icon ng-class=\"vm.userStatus.icon\" ng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon status s16\">\n</md-icon></div><span class=\"username\" hide-xs>{{vm.loggedInStaff}}</span><md-icon md-font-icon=\"icon-chevron-down\" \nclass=\"icon s16\" hide-xs></md-icon></div></md-button><md-menu-content width=\"3\"><md-menu-item class=\"md-indent\" \nng-show=\"vm.shiftNumber\" ui-sref=\"app.pages_profile\"><md-icon md-font-icon=\"icon-timetable\" class=\"icon\"></md-icon>\n<span style=\"margin-left: 48px; line-height: 2.9\">{{vm.shiftNumber}}</span></md-menu-item><md-menu-divider>\n</md-menu-divider><md-menu-item class=\"md-indent\"><md-icon md-font-icon=\"icon-logout\" class=\"icon\"></md-icon><md-button\n ng-click=\"vm.logout()\" translate=\"TOOLBAR.SIGN_OUT\"></md-button></md-menu-item></md-menu-content></md-menu>\n</md-menu-bar><div><md-icon md-font-icon=\"icon-hospital-marker\" ng-show=\"vm.location\" class=\"icon\" \nstyle=\"margin-right: 5px; margin-left: 15px\"></md-icon><span style=\"margin-right: 25px; font-size: 14px\">\n{{vm.location}}</span></div></div></div>");
 $templateCache.put("app/core/directives/ms-navigation/templates/horizontal.html","<div class=\"navigation-toggle\" hide-gt-sm><md-button class=\"md-icon-button\" ng-click=\"vm.toggleHorizontalMobileMenu()\" \naria-label=\"Toggle Mobile Navigation\"><md-icon md-font-icon=\"icon-menu\"></md-icon></md-button></div><ul \nclass=\"horizontal\"><li ng-repeat=\"node in vm.navigation\" ms-navigation-horizontal-node=\"node\" \nng-class=\"{\'has-children\': vm.hasChildren}\" ng-include=\"\'navigation-horizontal-nested.html\'\"></li></ul><script \ntype=\"text/ng-template\" id=\"navigation-horizontal-nested.html\">\n<div ms-navigation-horizontal-item layout=\"row\" ng-if=\"!vm.isHidden()\">\n\n        <div class=\"ms-navigation-horizontal-button\" ng-if=\"!node.uisref && node.title\"\n             ng-class=\"{\'active md-accent-bg\': vm.isActive}\">\n            <i class=\"icon s18 {{node.icon}}\" ng-if=\"node.icon\"></i>\n            <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n            <span class=\"badge white-fg\" style=\"background: {{node.badge.color}}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n            <i class=\"icon-chevron-right s18 arrow\" ng-if=\"vm.hasChildren\"></i>\n        </div>\n\n        <a class=\"ms-navigation-horizontal-button\" ui-sref=\"{{node.uisref}}\" ui-sref-active=\"active md-accent-bg\"\n           ng-class=\"{\'active md-accent-bg\': vm.isActive}\"\n           ng-if=\"node.uisref && node.title\">\n            <i class=\"icon s18 {{node.icon}}\" ng-if=\"node.icon\"></i>\n            <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n            <span class=\"badge white-fg\" style=\"background: {{node.badge.color}}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n            <i class=\"icon-chevron-right s18 arrow\" ng-if=\"vm.hasChildren\"></i>\n        </a>\n\n    </div>\n\n    <ul ng-if=\"vm.hasChildren && !vm.isHidden()\">\n        <li ng-repeat=\"node in node.children\" ms-navigation-horizontal-node=\"node\"\n            ng-class=\"{\'has-children\': vm.hasChildren}\"\n            ng-include=\"\'navigation-horizontal-nested.html\'\"></li>\n    </ul>\n</script>");
 $templateCache.put("app/core/directives/ms-navigation/templates/vertical.html","<ul><li ng-repeat=\"node in vm.navigation\" ms-navigation-node=\"node\" \nng-class=\"{\'collapsed\': vm.collapsed, \'has-children\': vm.hasChildren}\" ng-include=\"\'navigation-nested.html\'\"></li></ul>\n<script type=\"text/ng-template\" id=\"navigation-nested.html\">\n<div ms-navigation-item layout=\"row\" ng-if=\"!vm.isHidden()\">\n\n      <div class=\"ms-navigation-button\" ng-if=\"!node.uisref && node.title\">\n          <i class=\"icon s16 {{node.icon}}\" ng-if=\"node.icon\"></i>\n          <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n          <span class=\"badge white-fg\" ng-style=\"{\'background\': node.badge.color}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n          <i class=\"icon-chevron-right s16 arrow\" ng-if=\"vm.collapsable && vm.hasChildren\"></i>\n      </div>\n\n      <a class=\"ms-navigation-button\" ui-sref=\"{{node.uisref}}\" ui-sref-active=\"active md-accent-bg\"\n         ng-if=\"node.uisref && node.title\">\n          <i class=\"icon s16 {{node.icon}}\" ng-if=\"node.icon\"></i>\n          <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n          <span class=\"badge white-fg\" ng-style=\"{\'background\': node.badge.color}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n          <i class=\"icon-chevron-right s16 arrow\" ng-if=\"vm.collapsable && vm.hasChildren\"></i>\n      </a>\n\n  </div>\n\n  <ul ng-if=\"vm.hasChildren && !vm.isHidden()\">\n      <li ng-repeat=\"node in node.children\" ms-navigation-node=\"node\"\n          ng-class=\"{\'collapsed\': vm.collapsed, \'has-children\': vm.hasChildren}\"\n          ng-include=\"\'navigation-nested.html\'\"></li>\n  </ul>\n</script>");
-$templateCache.put("app/main/apps/appraisals/manageappraisal/manageappraisal.html","<div layout=\"row\" id=\"users\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"><h3></h3></md-card><md-toolbar \nclass=\"md-table-toolbar md-default\" ng-hide=\"options.rowSelection && selected.length\"><div class=\"md-toolbar-tools\">\n<span>Appraisals</span><div flex></div><md-button class=\"md-icon-button\" ng-click=\"getEmployeeList()\"><md-icon \naria-label=\"refresh list\" md-font-icon=\"icon-refresh\"></md-icon></md-button></div></md-toolbar><md-toolbar \nclass=\"md-table-toolbar alternate\" ng-show=\"options.rowSelection && selected.length\"><div class=\"md-toolbar-tools\">\n<span>{{selected.length}} {{selected.length > 1 ? \'Users\' : \'User\'}} selected</span></div></md-toolbar>\n<md-table-container><table md-table md-row-select=\"options.rowSelection\" multiple=\"{{options.multiSelect}}\" \nng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" md-head md-order=\"query.order\" \nmd-on-reorder=\"logOrder\"><tr md-row><th md-column md-order-by=\"name\"><span>Employee Name</span></th><th md-column \nmd-numeric md-order-by=\"fat.value\"><span></span></th></tr></thead><tbody md-body><tr md-row md-select=\"user\" \nmd-on-select=\"logItem\" md-auto-select=\"options.autoSelect\" \nng-repeat=\"user in users | filter: filter.search | orderBy: query.order \"><td md-cell>\n{{user.firstname}} {{user.lastname}}</td><td md-cell><md-icon \nng-click=\"vm.getAppraisalDetails(user,$event,\'appraisalform.html\')\" \nmd-svg-src=\"./assets/icons/svg/round-add-button.svg\" class=\"button\"></md-icon></td></tr></tbody></table>\n</md-table-container><md-table-pagination md-limit=\"query.limit\" md-limit-options=\"limitOptions\" md-page=\"query.page\" \nmd-total=\"{{users.count}}\" md-page-select=\"options.pageSelect\" md-boundary-links=\"options.boundaryLinks\" \nmd-on-paginate=\"vm.getEmployeeList\"></md-table-pagination></div></div>");
+$templateCache.put("app/main/apps/appraisals/manageappraisal/manageappraisal.html","<div layout=\"row\" id=\"users\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"></md-card><fieldset><legend>View</legend>\n<md-radio-group layout=\"row\" layout-align=\"center space-between\" ng-model=\"vm.section\"><md-radio-button \nvalue=\"pending\">Pending List</md-radio-button><md-radio-button value=\"reviewd\">Reviewed List</md-radio-button>\n<md-radio-button value=\"approved\">Approved List</md-radio-button></md-radio-group></fieldset><div class=\"table\" \nstyle=\"margin:25px\"><md-table-container><table md-table md-row-select=\"options.rowSelection\" \nmultiple=\"{{options.multiSelect}}\" ng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" \nmd-head md-order=\"query.order\" md-on-reorder=\"logOrder\"><tr md-row><th md-column><span>Full Name</span></th><th \nmd-column><span>Email</span></th><th md-column><span>Line of Business</span></th><th md-column><span>Appraisal Date\n</span></th></tr></thead><tbody md-body><tr md-row md-select=\"user\" md-on-select=\"logItem\" \nmd-auto-select=\"options.autoSelect\" ng-repeat=\"user in users | filter: filter.search | orderBy: query.order \"><td \nmd-cell>{{user.firstname}} {{user.lastname}}</td><td md-cell>{{user.email}}</td><td md-cell>{{user.lob}}</td><td \nmd-cell>{{user.appraisalDate}}</td><td md-cell><md-icon \nng-click=\"vm.getAppraisalDetails(user,$event,\'appraisalform.html\')\" \nmd-svg-src=\"./assets/icons/svg/view-list-button.svg\" class=\"button\">view</md-icon></td></tr></tbody></table>\n<md-table-pagination md-limit=\"query.limit\" md-limit-options=\"limitOptions\" md-page=\"query.page\" \nmd-total=\"{{employees.count}}\" md-page-select=\"options.pageSelect\" md-boundary-links=\"options.boundaryLinks\" \nmd-on-paginate=\"vm.getEmployeeList\"></md-table-pagination></md-table-container></div></div></div>");
 $templateCache.put("app/main/apps/appraisals/newappriasal/newappraisal.html","<md-progress-linear class=\"overlay\" ng-show=\"processingRequest\" md-mode=\"indeterminate\" ng-value=\"please\">\n</md-progress-linear><div layout=\"column\"><ms-form-wizard flex><md-tabs md-dynamic-height \nmd-selected=\"msWizard.selectedIndex\" md-center-tabs=\"true\"><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep1.$invalid\">1\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep1.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 1</span></span></md-tab-label><md-tab-body id=\"supplier-register\" \nclass=\"page\"><form name=\"wizardStep1\" class=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" \nlayout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>\nProfile</h3></md-card><fieldset class=\"profile-details-style\"><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\">\n<label class=\"tiredlabel\"><span class=\"\">*</span> Full Name:</label></div><md-input-container class=\"tiredinput\" \nflex=\"70\"><label></label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.FullName\"></md-input-container>\n</div><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\"><span class=\"\">*</span>\n Line of Business:</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label></label><md-select \nmd-no-asterisk name=\"lob\" ng-model=\"vm.profiledata.lob\"><md-option ng-repeat=\"lob in vm.lobs\" value=\"{{lob}}\">{{lob}}\n</md-option></md-select></md-input-container><div flex=\"20\"><label class=\"tiredlabel\">Location/based at:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"25\"><label></label><md-select md-no-asterisk name=\"location\" \nng-model=\"vm.profiledata.location\"><md-option ng-repeat=\"location in vm.locations\" \nvalue=\"{{location.state +\', \'+location.country}}\">{{location.state +\', \'+location.country}}</md-option></md-select>\n</md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\"><span \nclass=\"\">*</span> Year/period covered</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label></label>\n<input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.periodCovered\"></md-input-container><div flex=\"20\"><label \nclass=\"tiredlabel\">Time in present position:</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label>\n</label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.timeInPresentPosition\"></md-input-container></div>\n<div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\">Recruitment Date:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input md-no-asterisk type=\"date\" name=\"dateOfBirth\" \nng-model=\"vm.profiledata.recruitmentDate\"></md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div \nflex=\"20\"><label class=\"tiredlabel\">Length of service:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.lengthOfService\"></md-input-container></div>\n<div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\">Appraisal venue:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input md-no-asterisk type=\"text\" \nng-model=\"vm.profiledata.appraisalVenue\"></md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div \nflex=\"20\"><label class=\"tiredlabel\">Appraiser:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label>\n</label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.appraiser\"></md-input-container></div></fieldset>\n</form></md-tab-body></md-tab><md-tab><md-tab-label><span class=\"ms-form-wizard-step-label\"><span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep2.$invalid\">2</span> <span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep2.$valid\"><i class=\"icon-check s16\"></i> </span><span \nclass=\"ms-form-wizard-step-text\">Step 2</span></span></md-tab-label><md-tab-body><form name=\"wizardStep2\" \nclass=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\">\n<h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Goals & Objectives</h3></md-card><div \nclass=\"about-section-text\"><p>\nBriefly describe your personal understanding and contributions to the overall objective of the organisation in 2017</p>\n</div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.objective.objectives\" md-select-on-focus></textarea></md-input-container></div></form></md-tab-body>\n</md-tab><md-tab><md-tab-label><span class=\"ms-form-wizard-step-label\"><span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep3.$invalid\">3</span> <span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep3.$valid\"><i class=\"icon-check s16\"></i> </span><span \nclass=\"ms-form-wizard-step-text\">Step 3</span></span></md-tab-label><md-tab-body><form name=\"wizardStep3\" \nms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\">\n<md-icon md-font-icon=\"icon-content-paste\"></md-icon>Self Assessment</h3></md-card><ol><li class=\"number-list-tyle\">\n<div class=\"about-section-text aboutTextStyle\"><p>\nYour Job Summary: Provide a summary of your responsibilities during this period, including significant projects.</p>\n</div><ol class=\"romanStyle\"><li ng-repeat=\"jobsummary in vm.jobsummaries track by $index\"><div layout=\"row\">\n<md-input-container flex=\"70\" class=\"options-style\"><input md-no-asterisk type=\"text\" ng-model=\"jobsummary.summary\">\n</md-input-container><div flex=\"20\"><md-button class=\"\" aria-label=\"remove selected jobsummary\" \nng-click=\"vm.removeSelectedObject(jobsummary,\'jobsummary\')\"><md-icon md-svg-src=\"./assets/icons/svg/added/Delete.svg\" \nclass=\"deletebutton\"></md-icon></md-button></div></div></li></ol><div class=\"about-section-text\"><md-input-container \nflex=\"25\"><md-icon ng-click=\"vm.addNewObject(\'jobsummary\')\" md-svg-src=\"./assets/icons/svg/round-add-button.svg\" \nclass=\"button\"></md-icon></md-input-container></div></li><li class=\"number-list-tyle\"><div class=\"about-section-text\">\n<p>\nAdjusted Responsibilities/Additional Comments: Note any job changes, responsibilities, or projects added since the last update of your job description, plan of work or performance goals/objectives, as well as any special circumstances that provide a context for this performance review.\n</p></div><ol class=\"romanStyle\"><li ng-repeat=\"objective in vm.responsibilities track by $index\"><div layout=\"row\">\n<md-input-container flex=\"70\" class=\"options-style\"><input md-no-asterisk type=\"text\" ng-model=\"objective.comment\">\n</md-input-container><div flex=\"20\"><md-button aria-label=\"remove selected objective\" \nng-click=\"vm.removeSelectedObject(objective,\'responsibility\')\"><md-icon \nmd-svg-src=\"./assets/icons/svg/added/Delete.svg\" class=\"deletebutton\"></md-icon></md-button></div></div></li></ol><div \nclass=\"about-section-text\"><md-input-container flex=\"25\"><md-icon ng-click=\"vm.addNewObject(\'responsibility\')\" \nmd-svg-src=\"./assets/icons/svg/round-add-button.svg\" class=\"button\"></md-icon></md-input-container></div></li><li><div \nclass=\"about-section-text\"><p>\nPerformance Appraisal: Discuss and evaluate your performance against the firm’s objectives. Base your appraisal upon the job summary, adjusted responsibilities/additional comments and your performance goals for the performance cycle.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><ol><li><div class=\"p-appraisal-li\"><p>\nAccomplishment of key responsibilities/deliverables:</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex>\n<md-input-container flex=\"100\"><textarea ng-model=\"vm.performanceAppraisal.accomplishment\" md-select-on-focus>\n</textarea></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nAchievement of the goals established during the past year:</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex>\n<md-input-container flex=\"100\"><textarea ng-model=\"vm.performanceAppraisal.achievement\" md-select-on-focus></textarea>\n<div ng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIdentify areas of exceptional performance on your part that should be particularly noted. Provide specific examples.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.exceptionalPerformance\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIn your current position, can you share an example where you have demonstrated your leadership? Provide specific examples.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.leadership\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIn your current position, can you share an example where you have taken ownership? Provide specific examples.</p></div>\n<div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.ownership\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIdentify areas of your performance needing more attention or improvement. Provide specific examples.</p></div><div \nlayout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.improvement\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nApart from your current role, is there any other role in the organization you will like to function in? Please specify the role, state the reasons for your choice and articulate how you intend to contribute to the goal of the organization by functioning in this role.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.anyOtherRole\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li></ol></div></li></ol></form></md-tab-body></md-tab><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep4.$invalid\">4\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep4.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 4</span></span></md-tab-label><md-tab-body><form \nname=\"wizardStep4\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\"><h3 \nclass=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Founding Philosophy</h3></md-card><ol><li \nclass=\"number-list-tyle\"><div class=\"about-section-text\"><p>\nPlease rate your level of understanding of and/or performance against the firm’s founding philosophy using the following metrics:\n</p><span class=\"about-section-text\">(4 = Exceptional 3 = Good 2 = Below Average 1 = Poor)</span></div>\n<md-table-container><table md-table md-row-select=\"options.rowSelection\" multiple=\"{{options.multiSelect}}\" \nng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" md-head md-order=\"query.order\" \nmd-on-reorder=\"logOrder\"><tr md-row><th md-column md-order-by=\"name\"><span>Creed </span></th><th md-column \nmd-order-by=\"type\"><span>Definitions</span></th><th md-column md-order-by=\"type\"><span>Ratings</span></th></tr></thead>\n<tbody md-body><tr md-row md-select=\"user\" md-on-select=\"logItem\" md-auto-select=\"options.autoSelect\" \nng-repeat=\"philosophy in vm.foundingPhilosophy\"><td md-cell>{{philosophy.name}}</td><td md-cell>\n{{philosophy.definition}}</td><td md-cell><md-radio-group layout=\"row\" layout-align=\"start center\" \nng-checked=\"vm.collectionTypeChanged()\" ng-model=\"philosophy.rating\"><md-radio-button value=\"4\">4</md-radio-button>\n<md-radio-button value=\"3\">3</md-radio-button><md-radio-button value=\"2\">2</md-radio-button><md-radio-button value=\"1\">\n1</md-radio-button></md-radio-group></td></tr></tbody></table></md-table-container></li><li><div \nclass=\"about-section-text\"><p>\nList below key achievement / client feedback on your performance in relation to the founding philosophy (List the projects, Name of feedback provider (Client), brief description of your contribution)\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea ng-model=\"vm.feedBack\" \nmd-select-on-focus></textarea></md-input-container></div></li></ol></form></md-tab-body></md-tab><md-tab><md-tab-label>\n<span class=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" \nng-if=\"wizardStep5.$invalid\">5</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep5.$valid\">\n<i class=\"icon-check s16\"></i> </span><span class=\"ms-form-wizard-step-text\">Step 5</span></span></md-tab-label>\n<md-tab-body><form name=\"wizardStep5\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" \nlayout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Overall Assessment\n</h3></md-card><div class=\"about-section-text\"><p>Overall Performance Rating definition (Tick where appropriate)</p>\n</div><div class=\"overall\"><span>\n5 = Exceeds Expectations: Demonstrates this Performance Factor consistently above and beyond expectations</span><br>\n<span>\n4 = Meets Expectations: Effectively demonstrates the Performance Factor, all of the time, in all situations, consistently in line with expectations.\n</span><br><span>\n3 = Partially Meets Expectations: Effectively demonstrates the Performance Factor in many, but not all situations, and/or some improvement is .\n</span><br><span>\n2 = Does Not Meet Expectations: Has difficulty demonstrating this Performance Factor; significant improvement is . \n</span><br><span>\n1 = No Basis: had little opportunity to demonstrate this Performance Factor during the assessment period. </span><br>\n<span>\nN/A = Individual has not been in position long enough (at least three (3) months) to fully demonstrate the competencies for the position. This appraisal is provided for feedback purposes.\n</span><br></div><div layout=\"row\" layout-gt-xs=\"row\" class=\"page\" flex layout-align=\"space-around center\"><md-card \nclass=\"default header\" layout=\"column\" flex layout-align=\"center\"><md-radio-group layout=\"row\" \nng-checked=\"vm.collectionTypeChanged()\" ng-model=\"vm.assessment.overall\"><div flex=\"20\"><label>5</label>\n<md-radio-button value=\"5\"></md-radio-button></div><div flex=\"20\"><label>4</label><md-radio-button value=\"4\">\n</md-radio-button></div><div flex=\"20\"><label>3</label><md-radio-button value=\"3\"></md-radio-button></div><div \nflex=\"20\"><label>2</label><md-radio-button value=\"2\"></md-radio-button></div><div flex=\"20\"><label>1</label>\n<md-radio-button value=\"1\"></md-radio-button></div><div flex=\"20\"><label>N/A</label><md-radio-button value=\"0\">\n</md-radio-button></div></md-radio-group></md-card></div></form></md-tab-body></md-tab><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep6.$invalid\">6\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep6.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 6</span></span></md-tab-label><md-tab-body id=\"supplier-register\" \nclass=\"page\"><form name=\"wizardStep6\" class=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" \nlayout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>\nDevelopment Plan</h3></md-card><div class=\"about-section-text\"><p>\nDirections: Identify the areas where you would like to develop (either in terms of your knowledge, skills or performance) – this may relate to either your current position, or a future position (or both). Then describe what specific actions you will take to develop in that area. Finally indicate when you plan to complete this activity.\n</p></div><fieldset><legend>Performance Enhancement (Current Position)</legend><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\"><span class=\"\">*</span> Competences:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><textarea class=\"form-textarea\" md-no-asterisk type=\"text\" ng-model=\"vm.currentPosition.competences\">\n</textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label class=\"tiredlabel\">Actions:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><textarea md-no-asterisk type=\"text\" \nng-model=\"vm.currentPosition.actions\"></textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\">Due Date:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input \nmd-no-asterisk type=\"date\" name=\"dateOfBirth\" ng-model=\"vm.currentPosition.dueDate\"></md-input-container></div>\n</fieldset><fieldset><legend>Career Development (Future Positions)</legend><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\"><span class=\"\">*</span> Competences:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><textarea md-no-asterisk type=\"text\" ng-model=\"vm.futurePosition.competences\"></textarea>\n</md-input-container></div><div layout=\"row\"><div flex=\"20\"><label class=\"tiredlabel\">Actions:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><textarea md-no-asterisk type=\"text\" \nng-model=\"vm.futurePosition.actions\"></textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\">Due Date:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input \nmd-no-asterisk type=\"date\" name=\"dateOfBirth\" ng-model=\"vm.futurePosition.dueDate\"></md-input-container></div>\n</fieldset></form></md-tab-body></md-tab></md-tabs><div class=\"navigation\" flex layout=\"row\" \nlayout-align=\"center center\"><md-button class=\"md-raised md-accent\" ng-click=\"msWizard.previousStep()\" \nng-disabled=\"msWizard.isFirstStep()\">Previous</md-button><div class=\"steps\"><span ng-repeat=\"form in msWizard.forms\" \nng-class=\"{\'selected md-accent-bg\':msWizard.selectedIndex === $index}\"></span></div><md-button \nclass=\"md-raised md-accent\" ng-click=\"msWizard.nextStep()\" ng-hide=\"msWizard.isLastStep()\" \nng-disabled=\"msWizard.currentStepInvalid()\">Next</md-button><md-button class=\"md-raised md-warn\" \nng-click=\"vm.sendForm(); msWizard.resetForm();\" ng-show=\"msWizard.isLastStep()\" \nng-disabled=\"msWizard.formsIncomplete()\">Send</md-button></div></ms-form-wizard></div>");
-$templateCache.put("app/main/apps/settings/employeelist/employeelist.html","<div layout=\"row\" id=\"users\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"><h3></h3></md-card><fieldset><legend>\nDownload Template</legend><div layout=\"row\"><md-button class=\"md-accent md-raised\" ng-click=\"vm.downloadTemlate()\">\nDownload Template</md-button></div></fieldset><fieldset><legend>Upload Template</legend><md-input-container><label \nfor=\"excelFile\"></label><input id=\"excelFileInput\" accept=\".xls,.xlsx\" type=\"file\" import-from-excel>\n</md-input-container><md-button class=\"md-accent md-raised\" ng-click=\"vm.uploadTemlate()\">Upload Template</md-button>\n</fieldset><fieldset><legend>Employees</legend><md-table-container><table md-table \nmd-row-select=\"options.rowSelection\" ng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" \nmd-head md-order=\"query.order\" md-on-reorder=\"logOrder\"><tr md-row><th md-column md-order-by=\"name\"><span>First Name \n</span></th><th md-column md-order-by=\"type\"><span>Last Name</span></th><th md-column md-desc><span>Email</span></th>\n<th md-column><span>Role</span></th><th md-column md-desc><span>Recruitment Date</span></th><th md-column><span>\nLine of Business</span></th></tr></thead><tbody md-body><tr md-row md-select=\"user\" md-on-select=\"logItem\" \nmd-auto-select=\"options.autoSelect\" ng-repeat=\"user in employees | filter: filter.search | orderBy: query.order \"><td \nmd-cell>{{user.firstname}}</td><td md-cell>{{user.lastname}}</td><td md-cell>{{user.email}}</td><td md-cell>\n{{user.roleName}}</td><td md-cell>{{user.email}}</td><td md-cell>{{user.roleName}}</td></tr></tbody></table>\n</md-table-container></fieldset></div></div>");
+$templateCache.put("app/main/apps/settings/employeelist/employeelist.html","<div layout=\"row\" id=\"users\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"><h3></h3></md-card><fieldset><legend>\nDownload Template</legend><div layout=\"row\"><md-button class=\"md-accent md-raised\" ng-click=\"vm.downloadTemlate()\">\nDownload Template</md-button></div></fieldset><fieldset><legend>Upload Template</legend><md-input-container><label \nfor=\"excelFile\"></label><input id=\"excelFileInput\" accept=\".xls,.xlsx\" type=\"file\" import-from-excel>\n</md-input-container><md-button class=\"md-accent md-raised\" id=\"employeelistupload\" ng-click=\"vm.uploadTemlate()\">\nUpload Template</md-button></fieldset><fieldset><legend>Employees</legend><md-table-container><table md-table \nmd-row-select=\"options.rowSelection\" ng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" \nmd-head md-order=\"query.order\" md-on-reorder=\"logOrder\"><tr md-row><th md-column md-order-by=\"name\"><span>First Name \n</span></th><th md-column md-order-by=\"type\"><span>Last Name</span></th><th md-column md-desc><span>Email</span></th>\n<th md-column><span>Role</span></th><th md-column><span>Line of Business</span></th></tr></thead><tbody md-body><tr \nmd-row md-select=\"user\" md-on-select=\"logItem\" md-auto-select=\"options.autoSelect\" \nng-repeat=\"user in employees | filter: filter.search | orderBy: query.order \"><td md-cell>{{user.firstname}}</td><td \nmd-cell>{{user.lastname}}</td><td md-cell>{{user.email}}</td><td md-cell>{{user.roleName}}</td><td md-cell>{{user.lob}}\n</td></tr></tbody></table></md-table-container></fieldset></div></div>");
 $templateCache.put("app/main/apps/settings/login/login.html","<md-progress-linear class=\"overlay\" ng-show=\"processingRequest\" md-mode=\"indeterminate\" ng-value=\"please\">\n</md-progress-linear><div id=\"login-v2\" layout=\"row\" layout-align=\"start\"><div id=\"login-v2-intro\" flex hide \nshow-gt-sm><div class=\"title\"><img src=\"./assets/images/logos/logo-white.png\"></div></div><div \nng-show=\"processingRequest\" id=\"image-loading\"><div class=\"center\"><center><img \nsrc=\"./assets/images/logos/logo-white.png\"></center><div class=\"spinner-wrapper\"><div class=\"spinner\"><div \nclass=\"inner\"><div class=\"gap\"></div><div class=\"left\"><div class=\"half-circle\"></div></div><div class=\"right\"><div \nclass=\"half-circle\"></div></div></div></div></div></div></div><div id=\"login-v2-form-wrapper\" \nclass=\"flex-scrollable md-whiteframe-8dp\" ms-scroll><div id=\"login-v2-form\"><div class=\"logo md-accent-bg\" hide-gt-sm>\n<span><img src=\"./assets/images/logos/logo-white.png\"></span></div><div class=\"title\" translate=\"LOGIN_V2.TITLE\"></div>\n<form name=\"loginForm\" novalidate><md-input-container class=\"md-block\" md-no-float><input type=\"text\" \nng-model=\"vm.username\" translate translate-attr-placeholder=\"LOGIN_V2.USERNAME\" autocomplete=\"off\" required>\n</md-input-container><md-input-container class=\"md-block\" md-no-float><input type=\"password\" ng-model=\"vm.password\" \ntranslate translate-attr-placeholder=\"LOGIN_V2.PASSWORD\" required></md-input-container><md-button \nclass=\"md-raised md-accent submit-button\" type=\"submit\" aria-label=\"LOG IN\" ng-readonly=\"processingRequest\" \nng-disabled=\"processingRequest|| loginForm.$invalid || loginForm.$pristine\" ng-click=\"vm.login()\" \ntranslate=\"LOGIN_V2.LOG_IN\" translate-attr-aria-label=\"LOGIN_V2.LOG_IN\"></md-button><md-button ng-show=\"false\" \ntranslate=\"LOGIN_V2.CLEAR_STORAGE\" class=\"md-raised md-accent submit-button\" aria-label=\"LOG IN\" ng-click=\"vm.clear()\">\n</md-button></form></div></div></div>");
 $templateCache.put("app/main/apps/settings/passwordchange/passwordchange.html","<div layout=\"row\" id=\"passwordChange\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"><h3><md-icon md-font-icon=\"icon-content-paste\">\n</md-icon></h3></md-card><md-content class=\"body\" layout=\"column\" flex layout-padding layout-margin ms-scroll><form \nnovalidate name=\"passwordChange\"><fieldset><div layout=\"row\"><div flex=\"15\"><label class=\"label\">Current Password:\n</label></div><md-input-container flex=\"15\"><label></label><input md-no-asterisk type=\"text\" type=\"password\" \nname=\"oldpassword\" ng-model=\"vm.passwordChange.OldPassword\" required></md-input-container><div flex=\"20\"><label \nclass=\"label\">New Password:</label></div><md-input-container flex=\"15\"><label></label><input md-no-asterisk \ntype=\"password\" name=\"password\" ng-model=\"vm.passwordChange.Password\" required></md-input-container><div flex=\"20\">\n<label class=\"label\">Confirm Password:</label></div><md-input-container flex=\"15\"><label></label><input md-no-asterisk \ntype=\"password\" name=\"password_confirmation\" confirm-pwd=\"vm.passwordChange.Password\" \nng-model=\"vm.passwordChange.ConfirmPassword\" required><div class=\"form-errors\" \nng-messages=\"passwordChange.password_confirmation.$error\" ng-if=\"passwordChange.password_confirmation.$touched\"><span \nclass=\"form-error\" ng-message=\"password\">Password does not match</span></div></md-input-container><md-button \nclass=\"md-raised md-accent\" ng-disabled=\"passwordChange.$invalid || passwordChange.$pristine\" \nng-click=\"vm.changePassword()\" flex=\"10\">Add</md-button></div></fieldset></form></md-content></div></div>");
 $templateCache.put("app/main/apps/settings/register/register.html","<div id=\"register-v2\" layout=\"row\" layout-align=\"start\"><div id=\"register-v2-intro\" flex hide show-gt-sm><div \nclass=\"title\"><img src=\"./assets/images/logos/logo-white.png\"></div></div><div id=\"register-v2-form-wrapper\" \nclass=\"flex-scrollable md-whiteframe-8dp\" layout=\"column\" flex ms-scroll><div id=\"register-v2-form\"><div \nclass=\"logo md-accent-bg\" hide-gt-sm><span>F</span></div><div class=\"title\" translate=\"REGISTER_V2.TITLE\"></div><form \nname=\"registerForm\" novalidate ng-submit=\"vm.registerUser()\"><md-input-container class=\"md-block\" md-no-float><input \nname=\"username\" ng-model=\"vm.form.firstname\" placeholder=\"First Name\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.FIRSTNAME\" required><div ng-messages=\"registerForm.username.$error\" \nrole=\"alert\"><div ng-message=\"required\"><span translate=\"REGISTER_V2.ERRORS.FIRSTNAME_REQUIRED\">\nFirst name field is required</span></div></div></md-input-container><md-input-container class=\"md-block\" md-no-float>\n<input name=\"username\" ng-model=\"vm.form.lastname\" placeholder=\"Last Name\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.LASTNAME\" required><div ng-messages=\"registerForm.username.$error\" \nrole=\"alert\"><div ng-message=\"required\"><span translate=\"REGISTER_V2.ERRORS.LASTNAME_REQUIRED\">\nLast name field is required</span></div></div></md-input-container><md-input-container class=\"md-block\" md-no-float>\n<input type=\"email\" name=\"email\" ng-model=\"vm.form.email\" placeholder=\"Email\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.EMAIL\" ng-pattern=\"/^.+@.+\\..+$/\" required><div \nng-messages=\"registerForm.email.$error\" role=\"alert\" multiple=\"multiple\"><div ng-message=\"required\"><span \ntranslate=\"REGISTER_V2.ERRORS.EMAIL_REQUIRED\">Email field is required</span></div><div ng-message=\"pattern\"><span \ntranslate=\"REGISTER_V2.ERRORS.EMAIL_MUST_VALID\">Email must be a valid e-mail address</span></div></div>\n</md-input-container><md-input-container class=\"md-block\" md-no-float><input type=\"password\" name=\"password\" \nng-model=\"vm.form.password\" placeholder=\"Password\" translate translate-attr-placeholder=\"REGISTER_V2.PASSWORD\" \nrequired><div ng-messages=\"registerForm.password.$error\" role=\"alert\"><div ng-message=\"required\"><span \ntranslate=\"REGISTER_V2.ERRORS.PASSWORD_REQUIRED\">Password field is required</span></div></div></md-input-container>\n<md-input-container class=\"md-block\" md-no-float><input type=\"password\" name=\"passwordConfirm\" \nng-model=\"vm.form.passwordConfirm\" placeholder=\"Password (Confirm)\" confirm-pwd=\"vm.form.password\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.PASSWORD_CONFIRM\" required><div \nng-messages=\"registerForm.passwordConfirm.$error\" role=\"alert\"><div ng-message=\"required\"><span \ntranslate=\"REGISTER_V2.ERRORS.PASSWORD_CONFIRM_REQUIRED\">Password (Confirm) field is required</span></div></div><div \nclass=\"form-errors\" ng-messages=\"registerForm.passwordConfirm.$error\" ng-if=\"registerForm.passwordConfirm.$touched\">\n<span class=\"form-error\" ng-message=\"password\">Password does not match</span></div></md-input-container><div \nclass=\"terms\" layout=\"row\" layout-align=\"center center\"><md-checkbox name=\"terms\" ng-model=\"data.cb1\" \naria-label=\"I read and accept\" required></md-checkbox><div layout=\"row\" layout-sm=\"column\" layout-align=\"start center\">\n<span translate=\"REGISTER_V2.READ_ACCEPT\">I read and accept</span> <a href=\"#\" class=\"md-accent-color\" \ntranslate=\"REGISTER_V2.TERMS_COND\">terms and conditions</a></div></div><md-button type=\"submit\" \nclass=\"md-raised md-accent submit-button\" aria-label=\"CREATE MY ACCOUNT\" \nng-disabled=\"registerForm.$invalid || registerForm.$pristine\" translate=\"REGISTER_V2.CREATE_ACCOUNT\" \ntranslate-attr-aria-label=\"REGISTER_V2.CREATE_ACCOUNT\">CREATE MY ACCOUNT</md-button></form><div class=\"login\" \nlayout=\"row\" layout-sm=\"column\" layout-align=\"center center\"><span class=\"text\" translate=\"REGISTER_V2.ALREADY_HAVE\">\nAlready have an account?</span> <a class=\"link\" ui-sref=\"app.pages_auth_login-v2\" translate=\"REGISTER_V2.LOGIN\">Log in\n</a></div></div></div></div>");
@@ -14437,7 +14418,5 @@ $templateCache.put("app/core/directives/ms-card/templates/template-6/template-6.
 $templateCache.put("app/core/directives/ms-card/templates/template-7/template-7.html","<div class=\"template-7\" layout=\"row\" layout-align=\"space-between\"><div class=\"info\" layout=\"column\" \nlayout-align=\"space-between\" layout-fill flex><div class=\"p-16\"><div class=\"title h1\" ng-if=\"card.title\">{{card.title}}\n</div><div class=\"subtitle h4 secondary-text\" ng-if=\"card.subtitle\">{{card.subtitle}}</div><div class=\"text h4 pt-8\" \nng-if=\"card.text\">{{card.text}}</div></div><div><md-divider></md-divider><div class=\"p-8\" layout=\"row\"><md-icon \nmd-font-icon=\"icon-star-outline\" class=\"mh-5\"></md-icon><md-icon md-font-icon=\"icon-star-outline\" class=\"mh-5\">\n</md-icon><md-icon md-font-icon=\"icon-star-outline\" class=\"mh-5\"></md-icon><md-icon md-font-icon=\"icon-star-outline\" \nclass=\"mh-5\"></md-icon><md-icon md-font-icon=\"icon-star-outline\" class=\"mh-5\"></md-icon></div></div></div><div \nclass=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" alt=\"{{card.media.image.alt}}\" \nng-show=\"card.media.image\"></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-8/template-8.html","<div class=\"template-8\"><div class=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" \nalt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div><div class=\"content pv-24 ph-16\"><div class=\"title h1\" \nng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">{{card.subtitle}}\n</div><div class=\"buttons pt-16\"><md-button class=\"m-0\">{{card.button1}}</md-button><md-button class=\"m-0 md-accent\">\n{{card.button2}}</md-button></div><div class=\"text pt-16\" ng-if=\"card.text\">{{card.text}}</div></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-9/template-9.html","<div class=\"template-9\"><div class=\"header p-16\" layout=\"row\" layout-align=\"start center\"><div ng-if=\"card.avatar\"><img\n class=\"avatar mr-16\" ng-src=\"{{card.avatar.src}}\" alt=\"{{card.avatar.alt}}\"></div><div class=\"info\"><div \nclass=\"title\" ng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">\n{{card.subtitle}}</div></div></div><div class=\"text ph-16 pb-16\" ng-if=\"card.text\">{{card.text}}</div><div \nclass=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" alt=\"{{card.media.image.alt}}\" \nng-show=\"card.media.image\"></div><div class=\"buttons m-8\"><md-button class=\"md-icon-button mr-16\" \naria-label=\"Favorite\"><md-icon md-font-icon=\"icon-heart-outline\" class=\"s24\"></md-icon></md-button><md-button \nclass=\"md-icon-button\" aria-label=\"Share\"><md-icon md-font-icon=\"icon-share\" class=\"s24\"></md-icon></md-button></div>\n</div>");
-$templateCache.put("app/core/directives/ms-stepper/templates/horizontal/horizontal.html","<div class=\"ms-stepper-horizontal\"><div class=\"ms-stepper-navigation-wrapper\"><div class=\"ms-stepper-navigation\" \nlayout=\"row\" layout-align=\"center center\"><md-button class=\"ms-stepper-navigation-item\" \nng-class=\"{\'current\': MsStepper.isStepCurrent(step.stepNumber), \'valid\': MsStepper.isStepValid(step.stepNumber), \'disabled\': MsStepper.isStepDisabled(step.stepNumber), \'optional\': MsStepper.isStepOptional(step.stepNumber)}\" \nng-click=\"MsStepper.gotoStep(step.stepNumber)\" ng-disabled=\"MsStepper.isStepDisabled(step.stepNumber)\" \nng-repeat=\"step in MsStepper.steps\" layout=\"row\" layout-align=\"start center\"><div class=\"step md-accent-bg\" \nlayout=\"row\" layout-align=\"center center\"><span \nng-if=\"!MsStepper.isStepValid(step.stepNumber) || MsStepper.isStepOptional(step.stepNumber)\">{{step.stepNumber}} \n</span><span ng-if=\"MsStepper.isStepValid(step.stepNumber) && !MsStepper.isStepOptional(step.stepNumber)\"><i \nclass=\"icon icon-check s18\"></i></span></div><div layout=\"column\" layout-align=\"start start\"><div class=\"title\">\n{{step.stepTitle|translate}}</div><div class=\"subtitle\" ng-if=\"MsStepper.isStepOptional(step.stepNumber)\">Optional\n</div></div></md-button></div></div><div class=\"ms-stepper-steps\" ng-transclude></div><div class=\"ms-stepper-controls\" \nlayout=\"row\" layout-align=\"center center\"><md-button class=\"md-accent md-raised\" ng-disabled=\"MsStepper.isFirstStep()\" \nng-click=\"MsStepper.gotoPreviousStep()\">Back</md-button><div class=\"ms-stepper-dots\"><span \nng-repeat=\"step in MsStepper.steps\" ng-class=\"{\'selected md-accent-bg\':MsStepper.currentStepNumber === $index + 1}\">\n</span></div><md-button class=\"md-accent md-raised\" ng-if=\"!MsStepper.isLastStep()\" \nng-disabled=\"!MsStepper.isStepValid(MsStepper.currentStepNumber)\" ng-click=\"MsStepper.gotoNextStep()\">Next</md-button>\n<md-button type=\"submit\" class=\"md-accent md-raised\" ng-click=\"MsStepper.resetForm()\" ng-if=\"MsStepper.isLastStep()\" \nng-disabled=\"!MsStepper.isFormValid()\">Submit</md-button></div></div>");
-$templateCache.put("app/main/apps/appraisals/manageappraisal/dialogs/acceptappraisal/acceptappraisal.html","<md-dialog class=\"compose-dialog\" aria-label=\"New Message\"><form class=\"md-inline-form\"><md-toolbar \nclass=\"md-accent md-hue-2\"><div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><span \nclass=\"title\" translate=\"MAIL.NEW_MESSAGE\">New Message</span><md-button class=\"md-icon-button\" \nng-click=\"vm.closeDialog()\" aria-label=\"Close dialog\" tranlate translate-aria-label=\"MAIL.CLOSE_DIALOG\"><md-icon \nmd-font-icon=\"icon-close\"></md-icon></md-button></div></md-toolbar><md-dialog-content ms-scroll><md-input-container \nclass=\"md-block\"><label translate=\"MAIL.FROM\">From</label><input ng-model=\"vm.form.from\" type=\"email\" \ndisabled=\"disabled\"></md-input-container><md-input-container class=\"md-block to\" \nng-class=\"{\'hidden-cc\': vm.hiddenCC, \'hidden-bcc\': vm.hiddenBCC}\"><label translate=\"MAIL.TO\">To</label><input \nng-model=\"vm.form.to\" type=\"email\"><div class=\"cc-bcc\" layout=\"row\" layout-align=\"start center\"><div class=\"show-cc\" \nng-show=\"vm.hiddenCC\" ng-click=\"vm.hiddenCC = false\">CC</div><div class=\"show-bcc\" ng-show=\"vm.hiddenBCC\" \nng-click=\"vm.hiddenBCC = false\">BCC</div></div></md-input-container><md-input-container class=\"md-block\" \nng-hide=\"vm.hiddenCC\"><label translate=\"MAIL.CC\">Cc</label><input ng-model=\"vm.form.cc\" type=\"email\">\n</md-input-container><md-input-container class=\"md-block\" ng-hide=\"vm.hiddenBCC\"><label translate=\"MAIL.BCC\">Bcc\n</label><input ng-model=\"vm.form.bcc\" type=\"t\"></md-input-container><md-input-container class=\"md-block\"><label \ntranslate=\"MAIL.SUBJECT\">Subject</label><input ng-model=\"vm.form.subject\" type=\"text\"></md-input-container>\n<text-angular ng-model=\"vm.form.message\"></text-angular><div class=\"attachment-list\"><div class=\"attachment\" \nlayout=\"row\" layout-align=\"space-between center\"><div><span class=\"filename\">attachment-2.doc</span> <span \nclass=\"size\">(12 Kb)</span></div><md-button class=\"md-icon-button\" aria-label=\"Delete attachment\" translate \ntranslate-attr-aria-label=\"MAIL.DELETE_ATTACHMENT\"><md-icon md-font-icon=\"icon-close\" class=\"s16\"></md-icon>\n</md-button></div><div class=\"attachment\" layout=\"row\" layout-align=\"space-between center\"><div><span class=\"filename\">\nattachment-1.jpg</span> <span class=\"size\">(350 Kb)</span></div><md-button class=\"md-icon-button\" \naria-label=\"Delete attachment\" translate translate-attr-aria-label=\"MAIL.DELETE_ATTACHMENT\"><md-icon \nmd-font-icon=\"icon-close\" class=\"s16\"></md-icon></md-button></div></div></md-dialog-content><md-dialog-actions \nlayout=\"row\" layout-align=\"space-between center\"><div layout=\"row\" layout-align=\"start center\"><md-button \nng-click=\"vm.closeDialog()\" class=\"send-button md-accent md-raised\" aria-label=\"Send\" translate=\"MAIL.SEND\" \ntranslate-attr-aria-label=\"MAIL.SEND\">SEND</md-button><md-button class=\"md-icon-button\" aria-label=\"Attach file\" \ntranslate-attr-aria-label=\"MAIL.ATTACH_FILE\"><md-icon md-font-icon=\"icon-paperclip\"></md-icon><md-tooltip><span \ntranslate=\"MAIL.ATTACH_FILE\"></span></md-tooltip></md-button></div><div layout=\"row\"><md-button class=\"md-icon-button\" \naria-label=\"Delete\" translate-attr-aria-label=\"MAIL.DELETE\"><md-icon md-font-icon=\"icon-delete\"></md-icon><md-tooltip>\n<span translate=\"MAIL.DELETE\"></span></md-tooltip></md-button></div></md-dialog-actions></form></md-dialog>");
-$templateCache.put("app/main/apps/appraisals/manageappraisal/dialogs/declineappraisal/declineappraisal.html","<md-dialog class=\"compose-dialog\" aria-label=\"New Message\"><form class=\"md-inline-form\"><md-toolbar \nclass=\"md-accent md-hue-2\"><div class=\"md-toolbar-tools\" layout=\"row\" layout-align=\"space-between center\"><span \nclass=\"title\" translate=\"MAIL.NEW_MESSAGE\">New Message</span><md-button class=\"md-icon-button\" \nng-click=\"vm.closeDialog()\" aria-label=\"Close dialog\" tranlate translate-aria-label=\"MAIL.CLOSE_DIALOG\"><md-icon \nmd-font-icon=\"icon-close\"></md-icon></md-button></div></md-toolbar><md-dialog-content ms-scroll><md-input-container \nclass=\"md-block\"><label translate=\"MAIL.FROM\">From</label><input ng-model=\"vm.form.from\" type=\"email\" \ndisabled=\"disabled\"></md-input-container><md-input-container class=\"md-block to\" \nng-class=\"{\'hidden-cc\': vm.hiddenCC, \'hidden-bcc\': vm.hiddenBCC}\"><label translate=\"MAIL.TO\">To</label><input \nng-model=\"vm.form.to\" type=\"email\"><div class=\"cc-bcc\" layout=\"row\" layout-align=\"start center\"><div class=\"show-cc\" \nng-show=\"vm.hiddenCC\" ng-click=\"vm.hiddenCC = false\">CC</div><div class=\"show-bcc\" ng-show=\"vm.hiddenBCC\" \nng-click=\"vm.hiddenBCC = false\">BCC</div></div></md-input-container><md-input-container class=\"md-block\" \nng-hide=\"vm.hiddenCC\"><label translate=\"MAIL.CC\">Cc</label><input ng-model=\"vm.form.cc\" type=\"email\">\n</md-input-container><md-input-container class=\"md-block\" ng-hide=\"vm.hiddenBCC\"><label translate=\"MAIL.BCC\">Bcc\n</label><input ng-model=\"vm.form.bcc\" type=\"t\"></md-input-container><md-input-container class=\"md-block\"><label \ntranslate=\"MAIL.SUBJECT\">Subject</label><input ng-model=\"vm.form.subject\" type=\"text\"></md-input-container>\n<text-angular ng-model=\"vm.form.message\"></text-angular><div class=\"attachment-list\"><div class=\"attachment\" \nlayout=\"row\" layout-align=\"space-between center\"><div><span class=\"filename\">attachment-2.doc</span> <span \nclass=\"size\">(12 Kb)</span></div><md-button class=\"md-icon-button\" aria-label=\"Delete attachment\" translate \ntranslate-attr-aria-label=\"MAIL.DELETE_ATTACHMENT\"><md-icon md-font-icon=\"icon-close\" class=\"s16\"></md-icon>\n</md-button></div><div class=\"attachment\" layout=\"row\" layout-align=\"space-between center\"><div><span class=\"filename\">\nattachment-1.jpg</span> <span class=\"size\">(350 Kb)</span></div><md-button class=\"md-icon-button\" \naria-label=\"Delete attachment\" translate translate-attr-aria-label=\"MAIL.DELETE_ATTACHMENT\"><md-icon \nmd-font-icon=\"icon-close\" class=\"s16\"></md-icon></md-button></div></div></md-dialog-content><md-dialog-actions \nlayout=\"row\" layout-align=\"space-between center\"><div layout=\"row\" layout-align=\"start center\"><md-button \nng-click=\"vm.closeDialog()\" class=\"send-button md-accent md-raised\" aria-label=\"Send\" translate=\"MAIL.SEND\" \ntranslate-attr-aria-label=\"MAIL.SEND\">SEND</md-button><md-button class=\"md-icon-button\" aria-label=\"Attach file\" \ntranslate-attr-aria-label=\"MAIL.ATTACH_FILE\"><md-icon md-font-icon=\"icon-paperclip\"></md-icon><md-tooltip><span \ntranslate=\"MAIL.ATTACH_FILE\"></span></md-tooltip></md-button></div><div layout=\"row\"><md-button class=\"md-icon-button\" \naria-label=\"Delete\" translate-attr-aria-label=\"MAIL.DELETE\"><md-icon md-font-icon=\"icon-delete\"></md-icon><md-tooltip>\n<span translate=\"MAIL.DELETE\"></span></md-tooltip></md-button></div></md-dialog-actions></form></md-dialog>");}]);
-//# sourceMappingURL=../maps/scripts/app-c56d2853ae.js.map
+$templateCache.put("app/core/directives/ms-stepper/templates/horizontal/horizontal.html","<div class=\"ms-stepper-horizontal\"><div class=\"ms-stepper-navigation-wrapper\"><div class=\"ms-stepper-navigation\" \nlayout=\"row\" layout-align=\"center center\"><md-button class=\"ms-stepper-navigation-item\" \nng-class=\"{\'current\': MsStepper.isStepCurrent(step.stepNumber), \'valid\': MsStepper.isStepValid(step.stepNumber), \'disabled\': MsStepper.isStepDisabled(step.stepNumber), \'optional\': MsStepper.isStepOptional(step.stepNumber)}\" \nng-click=\"MsStepper.gotoStep(step.stepNumber)\" ng-disabled=\"MsStepper.isStepDisabled(step.stepNumber)\" \nng-repeat=\"step in MsStepper.steps\" layout=\"row\" layout-align=\"start center\"><div class=\"step md-accent-bg\" \nlayout=\"row\" layout-align=\"center center\"><span \nng-if=\"!MsStepper.isStepValid(step.stepNumber) || MsStepper.isStepOptional(step.stepNumber)\">{{step.stepNumber}} \n</span><span ng-if=\"MsStepper.isStepValid(step.stepNumber) && !MsStepper.isStepOptional(step.stepNumber)\"><i \nclass=\"icon icon-check s18\"></i></span></div><div layout=\"column\" layout-align=\"start start\"><div class=\"title\">\n{{step.stepTitle|translate}}</div><div class=\"subtitle\" ng-if=\"MsStepper.isStepOptional(step.stepNumber)\">Optional\n</div></div></md-button></div></div><div class=\"ms-stepper-steps\" ng-transclude></div><div class=\"ms-stepper-controls\" \nlayout=\"row\" layout-align=\"center center\"><md-button class=\"md-accent md-raised\" ng-disabled=\"MsStepper.isFirstStep()\" \nng-click=\"MsStepper.gotoPreviousStep()\">Back</md-button><div class=\"ms-stepper-dots\"><span \nng-repeat=\"step in MsStepper.steps\" ng-class=\"{\'selected md-accent-bg\':MsStepper.currentStepNumber === $index + 1}\">\n</span></div><md-button class=\"md-accent md-raised\" ng-if=\"!MsStepper.isLastStep()\" \nng-disabled=\"!MsStepper.isStepValid(MsStepper.currentStepNumber)\" ng-click=\"MsStepper.gotoNextStep()\">Next</md-button>\n<md-button type=\"submit\" class=\"md-accent md-raised\" ng-click=\"MsStepper.resetForm()\" ng-if=\"MsStepper.isLastStep()\" \nng-disabled=\"!MsStepper.isFormValid()\">Submit</md-button></div></div>");}]);
+//# sourceMappingURL=../maps/scripts/app-594d0c57c1.js.map
