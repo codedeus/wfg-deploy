@@ -763,143 +763,6 @@
 {
     'use strict';
 
-    MsWidgetController.$inject = ["$scope", "$element"];
-    angular
-        .module('app.core')
-        .controller('MsWidgetController', MsWidgetController)
-        .directive('msWidget', msWidgetDirective)
-        .directive('msWidgetFront', msWidgetFrontDirective)
-        .directive('msWidgetBack', msWidgetBackDirective);
-
-    /** @ngInject */
-    function MsWidgetController($scope, $element)
-    {
-        var vm = this;
-
-        // Data
-        vm.flipped = false;
-
-        // Methods
-        vm.flip = flip;
-
-        //////////
-
-        /**
-         * Flip the widget
-         */
-        function flip()
-        {
-            if ( !isFlippable() )
-            {
-                return;
-            }
-
-            // Toggle flipped status
-            vm.flipped = !vm.flipped;
-
-            // Toggle the 'flipped' class
-            $element.toggleClass('flipped', vm.flipped);
-        }
-
-        /**
-         * Check if widget is flippable
-         *
-         * @returns {boolean}
-         */
-        function isFlippable()
-        {
-            return (angular.isDefined($scope.flippable) && $scope.flippable === true);
-        }
-    }
-
-    /** @ngInject */
-    function msWidgetDirective()
-    {
-        return {
-            restrict  : 'E',
-            scope     : {
-                flippable: '=?'
-            },
-            controller: 'MsWidgetController',
-            transclude: true,
-            compile   : function (tElement)
-            {
-                tElement.addClass('ms-widget');
-
-                return function postLink(scope, iElement, iAttrs, MsWidgetCtrl, transcludeFn)
-                {
-                    // Custom transclusion
-                    transcludeFn(function (clone)
-                    {
-                        iElement.empty();
-                        iElement.append(clone);
-                    });
-
-                    //////////
-                };
-            }
-        };
-    }
-
-    /** @ngInject */
-    function msWidgetFrontDirective()
-    {
-        return {
-            restrict  : 'E',
-            require   : '^msWidget',
-            transclude: true,
-            compile   : function (tElement)
-            {
-                tElement.addClass('ms-widget-front');
-
-                return function postLink(scope, iElement, iAttrs, MsWidgetCtrl, transcludeFn)
-                {
-                    // Custom transclusion
-                    transcludeFn(function (clone)
-                    {
-                        iElement.empty();
-                        iElement.append(clone);
-                    });
-
-                    // Methods
-                    scope.flipWidget = MsWidgetCtrl.flip;
-                };
-            }
-        };
-    }
-
-    /** @ngInject */
-    function msWidgetBackDirective()
-    {
-        return {
-            restrict  : 'E',
-            require   : '^msWidget',
-            transclude: true,
-            compile   : function (tElement)
-            {
-                tElement.addClass('ms-widget-back');
-
-                return function postLink(scope, iElement, iAttrs, MsWidgetCtrl, transcludeFn)
-                {
-                    // Custom transclusion
-                    transcludeFn(function (clone)
-                    {
-                        iElement.empty();
-                        iElement.append(clone);
-                    });
-
-                    // Methods
-                    scope.flipWidget = MsWidgetCtrl.flip;
-                };
-            }
-        };
-    }
-
-})();
-(function ()
-{
-    'use strict';
-
     msTimelineItemDirective.$inject = ["$timeout", "$q"];
     angular
         .module('app.core')
@@ -1162,6 +1025,143 @@
             }
         };
     }
+})();
+(function ()
+{
+    'use strict';
+
+    MsWidgetController.$inject = ["$scope", "$element"];
+    angular
+        .module('app.core')
+        .controller('MsWidgetController', MsWidgetController)
+        .directive('msWidget', msWidgetDirective)
+        .directive('msWidgetFront', msWidgetFrontDirective)
+        .directive('msWidgetBack', msWidgetBackDirective);
+
+    /** @ngInject */
+    function MsWidgetController($scope, $element)
+    {
+        var vm = this;
+
+        // Data
+        vm.flipped = false;
+
+        // Methods
+        vm.flip = flip;
+
+        //////////
+
+        /**
+         * Flip the widget
+         */
+        function flip()
+        {
+            if ( !isFlippable() )
+            {
+                return;
+            }
+
+            // Toggle flipped status
+            vm.flipped = !vm.flipped;
+
+            // Toggle the 'flipped' class
+            $element.toggleClass('flipped', vm.flipped);
+        }
+
+        /**
+         * Check if widget is flippable
+         *
+         * @returns {boolean}
+         */
+        function isFlippable()
+        {
+            return (angular.isDefined($scope.flippable) && $scope.flippable === true);
+        }
+    }
+
+    /** @ngInject */
+    function msWidgetDirective()
+    {
+        return {
+            restrict  : 'E',
+            scope     : {
+                flippable: '=?'
+            },
+            controller: 'MsWidgetController',
+            transclude: true,
+            compile   : function (tElement)
+            {
+                tElement.addClass('ms-widget');
+
+                return function postLink(scope, iElement, iAttrs, MsWidgetCtrl, transcludeFn)
+                {
+                    // Custom transclusion
+                    transcludeFn(function (clone)
+                    {
+                        iElement.empty();
+                        iElement.append(clone);
+                    });
+
+                    //////////
+                };
+            }
+        };
+    }
+
+    /** @ngInject */
+    function msWidgetFrontDirective()
+    {
+        return {
+            restrict  : 'E',
+            require   : '^msWidget',
+            transclude: true,
+            compile   : function (tElement)
+            {
+                tElement.addClass('ms-widget-front');
+
+                return function postLink(scope, iElement, iAttrs, MsWidgetCtrl, transcludeFn)
+                {
+                    // Custom transclusion
+                    transcludeFn(function (clone)
+                    {
+                        iElement.empty();
+                        iElement.append(clone);
+                    });
+
+                    // Methods
+                    scope.flipWidget = MsWidgetCtrl.flip;
+                };
+            }
+        };
+    }
+
+    /** @ngInject */
+    function msWidgetBackDirective()
+    {
+        return {
+            restrict  : 'E',
+            require   : '^msWidget',
+            transclude: true,
+            compile   : function (tElement)
+            {
+                tElement.addClass('ms-widget-back');
+
+                return function postLink(scope, iElement, iAttrs, MsWidgetCtrl, transcludeFn)
+                {
+                    // Custom transclusion
+                    transcludeFn(function (clone)
+                    {
+                        iElement.empty();
+                        iElement.append(clone);
+                    });
+
+                    // Methods
+                    scope.flipWidget = MsWidgetCtrl.flip;
+                };
+            }
+        };
+    }
+
 })();
 (function ()
 {
@@ -1876,30 +1876,6 @@
                 wrapper.append(iElement);
 
                 //////////
-            }
-        };
-    }
-})();
-(function ()
-{
-    'use strict';
-
-    angular
-        .module('app.core')
-        .directive('msRandomClass', msRandomClassDirective);
-
-    /** @ngInject */
-    function msRandomClassDirective()
-    {
-        return {
-            restrict: 'A',
-            scope   : {
-                msRandomClass: '='
-            },
-            link    : function (scope, iElement)
-            {
-                var randomClass = scope.msRandomClass[Math.floor(Math.random() * (scope.msRandomClass.length))];
-                iElement.addClass(randomClass);
             }
         };
     }
@@ -3253,6 +3229,30 @@
 {
     'use strict';
 
+    angular
+        .module('app.core')
+        .directive('msRandomClass', msRandomClassDirective);
+
+    /** @ngInject */
+    function msRandomClassDirective()
+    {
+        return {
+            restrict: 'A',
+            scope   : {
+                msRandomClass: '='
+            },
+            link    : function (scope, iElement)
+            {
+                var randomClass = scope.msRandomClass[Math.floor(Math.random() * (scope.msRandomClass.length))];
+                iElement.addClass(randomClass);
+            }
+        };
+    }
+})();
+(function ()
+{
+    'use strict';
+
     msNavIsFoldedDirective.$inject = ["$document", "$rootScope", "msNavFoldService"];
     msNavDirective.$inject = ["$rootScope", "$mdComponentRegistry", "msNavFoldService"];
     msNavToggleDirective.$inject = ["$rootScope", "$q", "$animate", "$state"];
@@ -4390,49 +4390,6 @@
 {
     'use strict';
 
-    angular
-        .module('app.core')
-        .directive('msCard', msCardDirective);
-
-    /** @ngInject */
-    function msCardDirective()
-    {
-        return {
-            restrict: 'E',
-            scope   : {
-                templatePath: '=template',
-                card        : '=ngModel',
-                vm          : '=viewModel'
-            },
-            template: '<div class="ms-card-content-wrapper" ng-include="templatePath" onload="cardTemplateLoaded()"></div>',
-            compile : function (tElement)
-            {
-                // Add class
-                tElement.addClass('ms-card');
-
-                return function postLink(scope, iElement)
-                {
-                    // Methods
-                    scope.cardTemplateLoaded = cardTemplateLoaded;
-
-                    //////////
-
-                    /**
-                     * Emit cardTemplateLoaded event
-                     */
-                    function cardTemplateLoaded()
-                    {
-                        scope.$emit('msCard::cardTemplateLoaded', iElement);
-                    }
-                };
-            }
-        };
-    }
-})();
-(function ()
-{
-    'use strict';
-
     msDatepickerFix.$inject = ["msDatepickerFixConfig"];
     angular
         .module('app.core')
@@ -4501,6 +4458,49 @@
             {
                 ngModel.$formatters.unshift(msDatepickerFixConfig.formatter); // to view
                 ngModel.$parsers.unshift(msDatepickerFixConfig.parser); // to model
+            }
+        };
+    }
+})();
+(function ()
+{
+    'use strict';
+
+    angular
+        .module('app.core')
+        .directive('msCard', msCardDirective);
+
+    /** @ngInject */
+    function msCardDirective()
+    {
+        return {
+            restrict: 'E',
+            scope   : {
+                templatePath: '=template',
+                card        : '=ngModel',
+                vm          : '=viewModel'
+            },
+            template: '<div class="ms-card-content-wrapper" ng-include="templatePath" onload="cardTemplateLoaded()"></div>',
+            compile : function (tElement)
+            {
+                // Add class
+                tElement.addClass('ms-card');
+
+                return function postLink(scope, iElement)
+                {
+                    // Methods
+                    scope.cardTemplateLoaded = cardTemplateLoaded;
+
+                    //////////
+
+                    /**
+                     * Emit cardTemplateLoaded event
+                     */
+                    function cardTemplateLoaded()
+                    {
+                        scope.$emit('msCard::cardTemplateLoaded', iElement);
+                    }
+                };
             }
         };
     }
@@ -6442,6 +6442,311 @@
             //Third-party libraries
             'lfNgMdFileInput'
         ]);
+})();
+
+(function () {
+  'use strict';
+
+  angular
+  .module('fuse')
+  .factory('UtilityService', UtilityService);
+
+  UtilityService.$inject = ['$http', '$log', '$q', '$rootScope', '$mdDialog'];
+
+  function UtilityService($http, $log, $q, $rootScope, $mdDialog) {
+    console.log('Initializing UtilityService...');
+    var service = {
+      ResizeBase64Img:ResizeBase64Img,
+      showDialog:showDialog,
+      showAlert:showAlert,
+      importFromExcel: importFromExcel,
+      exportToExcel: exportToExcel
+    };
+
+    return service;
+
+        function ResizeBase64Img(base64, width, height) {
+            var canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+            var context = canvas.getContext("2d");
+            var deferred = $.Deferred();
+            $("<img/>").attr("src", "data:image/png;base64," + base64).load(function() {
+                context.scale(width/this.width,  height/this.height);
+                context.drawImage(this, 0, 0);
+                deferred.resolve($("<img/>").attr("src", canvas.toDataURL()));
+            });
+            return deferred.promise();
+        }
+
+
+        function showDialog(ev, templateFile, dialogData,ctrlr,viewOnly,patient){
+          $mdDialog.show({
+            controller: ctrlr,
+            locals: { dialogData: dialogData, viewOnly: viewOnly, patientDetails: patient },
+            templateUrl: 'app/main/dialogs/' + templateFile,
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: false,
+            fullscreen: true,
+            multiple: true
+                //  directive:importFromExcel
+          })
+          .then(function() {
+              //Do nothing for now.
+          }, function() {
+              //still do nothing
+          });
+        }
+
+        function showAlert(title,content){
+          $mdDialog.show(
+            $mdDialog.alert()
+            .title(title)
+            .textContent(content)
+            .ariaLabel('Alert Dialog')
+            .ok('Got It!'));
+        }
+
+        function importFromExcel(event, filePath, funcName) {
+          if (event.target.files.length == 0) {
+              return false;
+          }
+          alasql('SELECT * FROM FILE(?,{headers:true})', [event], function (data) {
+              $rootScope.employeeList = data;
+          });
+        }
+
+        function exportToExcel(fileName, targetData) {
+
+          if (!angular.isArray(targetData)) {
+              $log.error('Can not export error type data to excel.');
+              return;
+          }
+
+          alasql('SELECT * INTO XLSX("'+ fileName + '.xlsx",{headers:true}) FROM ?', [targetData],function (response) {
+
+          });
+      }
+  }
+})();
+
+(function () {
+    'use strict';
+
+    angular
+        .module('fuse')
+        .factory('ReportBuilderService', ReportBuilderService);
+
+    ReportBuilderService.$inject = ['$http', '$log', '$q', '$rootScope', 'lovefield'];
+
+    function ReportBuilderService($http, $log, $q, $rootScope,StoreService) {
+        var imageUrl;
+        var imageString;
+        var companyName;
+        getLogoAndcompanyName();
+        toDataURL('app/ReportLogo/logo.png', function (dataUrl) {
+            console.log(dataUrl);
+            imageUrl = dataUrl;
+        });
+        var service = {
+            BuildPdfContent: BuildPdfContent,
+            buildReportHeader: buildReportHeader,
+            BuildPDFText: BuildPDFText,
+            buildHtmlToPdfReport: buildHtmlToPdfReport,
+            displayOrPrintPdf:displayOrPrintPdf,
+            getLogoAndcompanyName:getLogoAndcompanyName
+        };
+
+        return service;
+
+        function getReportLogo(){
+
+          StoreService.GetGlobalConstants('ImageUrl').then(function(response){
+              if (response.length > 0) {
+                imageString = response[0].Value;
+              }
+          });
+        }
+
+        function getReporHeader(){
+            StoreService.GetGlobalConstants('ReportHeader').then(function(response){
+                if (response.length > 0) {
+                  companyName = response[0].Value;
+                }
+            });
+        }
+
+        function getLogoAndcompanyName(){
+          getReportLogo();
+          getReporHeader();
+        }
+
+
+        function BuildPdfContent(reportObject, marginData, lineSpanLength) {
+            var pdfContent = {};
+            var content = [];
+            var parentGroupHead = {};
+            var groupHead = [];
+            var allParents = reportObject.parentGroupProperty == undefined ? [{ Title: 'N/A' }] : _.uniq(reportObject.reportData.map(function (reportDataEntry) {
+                return reportDataEntry[reportObject.parentGroupProperty];
+            }));
+
+            for (var i = 0; i < allParents.length; i++) {
+                //TODO: push parent title here... : allParents[i] ONLY if reportObject.parentGroupProperty is defined
+
+                var parentSum; // _.sumBy(dataForParent,reportObject.summingProperty);
+                var dataForParent = reportObject.parentGroupProperty == undefined ? reportObject.reportData : _.filter(reportObject.reportData, function (o) { return o[reportObject.parentGroupProperty] == allParents[i]; });
+                if (reportObject.parentGroupProperty != undefined) {
+                    content.push({ width: "*", text: reportObject.parentGroupProperty + ' ----------- ' + (allParents[i] == undefined ? ' N/A' : allParents[i]), margin: [5, 15, 2, 2] });
+                    //   parentSum =  _.sumBy(dataForParent,reportObject.summingProperty);
+                }
+                //  groupHead = reportObject.parentGroupProperty != undefined?[{width:"*", text: allParents[i]==undefined?'N/A':allParents[i],margin: [45, 2, 2, 2] }]:[""];
+                //   var groupName = allParents[i]==undefined?'N/A':allParents[i];
+                var allChidren = reportObject.childGroupProperty == undefined ? [{ Title: 'N/A' }] : _.uniq(dataForParent.map(function (reportDataEntry) {
+                    return reportDataEntry[reportObject.childGroupProperty];
+                }));
+
+
+                //  var childSum = _.sumBy(dataForChild,reportDataEntry.summingProperty);
+                for (var j = 0; j < allChidren.length; j++) {
+
+
+                    var dataForChild = reportObject.childGroupProperty == undefined ? dataForParent : _.filter(dataForParent, function (o) { return o[reportObject.childGroupProperty] == allChidren[j]; });
+                    //TODO: Push child title here...: allChidren[j] ONLY if reportObject.childGroupProperty is defined
+
+                    if (reportObject.childGroupProperty != undefined) {
+                        content.push({ width: "*", text: reportObject.childGroupProperty + ' ----------- ' + (allChidren[j] == undefined ? ' N/A' : allChidren[j]), margin: [100, 2, 2, 2] });
+                        //   parentSum =  _.sumBy(dataForParent,reportObject.summingProperty);
+                    }
+
+                    content.push(buildtable({ data: dataForChild, columns: reportObject.columns, width: reportObject.width, parentGroupProperty: reportObject.parentGroupProperty, parentGroupHead: allParents[i] }, marginData));
+                    if (reportObject.childGroupProperty != undefined && reportObject.summingProperty != undefined) {
+                        content.push({ width: "*", alignment: 'right', text: allChidren[j] + ' Total -----------' + _.floor(_.sumBy(dataForChild, reportObject.summingProperty)) });
+                    }
+                }
+
+                if (reportObject.parentGroupProperty != undefined && reportObject.summingProperty != undefined) {
+
+                    var groupName = allParents[i] == undefined ? ' N/A' : allParents[i];
+                    content.push({ width: "*", alignment: 'right', text: groupName + ' Total -----------: ' + _.floor(_.sumBy(dataForParent, reportObject.summingProperty), 2) });
+                }
+            }
+
+            //  var groupHead = {width:"*", text: departmentName==undefined?'N/A':departmentName,margin: [45, 2, 2, 2] };
+            pdfContent.content = content
+            //    pdfContent.content.push(content);
+
+            return pdfContent;
+        }
+
+        function toDataURL(src, callback, outputFormat) {
+
+            var img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = function () {
+                var canvas = document.createElement('CANVAS');
+                var ctx = canvas.getContext('2d');
+                var dataURL;
+                canvas.height = 40;
+                canvas.width = 40;
+                ctx.scale(40 / this.naturalWidth, 40 / this.naturalHeight);
+
+                ctx.drawImage(this, 0, 0);
+                dataURL = canvas.toDataURL(outputFormat);
+                callback(dataURL);
+            };
+            img.src = src;
+        }
+
+        function buildReportHeader(reportTitle, lineSpanLength,logoMargin,titleMargin) {
+            companyName = companyName || 'WorkForce Group';
+            imageString = imageString||imageUrl;
+            debugger;
+            return [
+                {
+                    table: {
+                        widths: ['auto', lineSpanLength-60],
+                        body: [
+                            [{
+                                image: imageString //'/src/app/ReportLogo/logo.png'
+                            },
+                            {
+                                stack: [{
+                                    alignment: 'center',
+                                    style: 'h1',
+                                    text: companyName,
+                                    margin:[0, 13, 0, 0]
+                                }]
+                            }
+                            ]
+                        ]
+                    },margin: logoMargin|| [0, 5, 0, 0]
+                }, { canvas: [{ type: 'line', x1: 0, y1: 5, x2: lineSpanLength, y2: 5, lineWidth: 1 }] ,margin:titleMargin|| [0, 5, 0, 0]},
+                {
+                    alignment: 'center',
+                    style: 'header',
+                    text: reportTitle,
+                    margin:[0, 8, 0, 0]
+                },
+                { canvas: [{ type: 'line', x1: 0, y1: 5, x2: lineSpanLength, y2: 5, lineWidth: 1 }],margin:titleMargin||[0, 5, 0, 0] }
+            ];
+        }
+
+        function BuildPDFText(text, style, alignment, margin, bold, canvasFormat) {
+            return {
+                text: text,
+                style: style,
+                alignment: alignment,
+                margin: margin,
+                bold: bold,
+                canvas: canvasFormat
+            }
+        }
+
+
+        function buildtable(tableData, marginData) {
+            if (marginData != undefined) { marginData = marginData } else { marginData = [0, 5, 0, 0] }
+            for (var i = 0; i < tableData.data.length; i++) {
+                return {
+                    columns: [
+                        //  { width: '*', text: '' },
+                        {
+                            width: 'auto',
+                            table: {
+                                widths: tableData.width,
+                                headerRows: 1,
+
+                                body: buildTableBody(tableData.data, tableData.columns)
+                            },
+                            margin: marginData,
+                            fontSize: 10
+                        },
+                        { width: '*', text: '' }
+
+                    ]
+                };
+            }
+
+        }
+
+        function buildTableBody(data, columns) {
+            var body = [];
+            body.push(columns);
+            data.forEach(function (row) {
+                var dataRow = [];
+                columns.forEach(function (column) {
+                    if (row[column] == undefined) {
+                        row[column] = '';
+                    }
+                    dataRow.push(row[column].toString());
+                });
+                body.push(dataRow);
+            });
+            return body;
+        }
+
+    }
 })();
 
 (function () {
@@ -13192,311 +13497,6 @@
     }
 })();
 
-(function () {
-  'use strict';
-
-  angular
-  .module('fuse')
-  .factory('UtilityService', UtilityService);
-
-  UtilityService.$inject = ['$http', '$log', '$q', '$rootScope', '$mdDialog'];
-
-  function UtilityService($http, $log, $q, $rootScope, $mdDialog) {
-    console.log('Initializing UtilityService...');
-    var service = {
-      ResizeBase64Img:ResizeBase64Img,
-      showDialog:showDialog,
-      showAlert:showAlert,
-      importFromExcel: importFromExcel,
-      exportToExcel: exportToExcel
-    };
-
-    return service;
-
-        function ResizeBase64Img(base64, width, height) {
-            var canvas = document.createElement("canvas");
-            canvas.width = width;
-            canvas.height = height;
-            var context = canvas.getContext("2d");
-            var deferred = $.Deferred();
-            $("<img/>").attr("src", "data:image/png;base64," + base64).load(function() {
-                context.scale(width/this.width,  height/this.height);
-                context.drawImage(this, 0, 0);
-                deferred.resolve($("<img/>").attr("src", canvas.toDataURL()));
-            });
-            return deferred.promise();
-        }
-
-
-        function showDialog(ev, templateFile, dialogData,ctrlr,viewOnly,patient){
-          $mdDialog.show({
-            controller: ctrlr,
-            locals: { dialogData: dialogData, viewOnly: viewOnly, patientDetails: patient },
-            templateUrl: 'app/main/dialogs/' + templateFile,
-            parent: angular.element(document.body),
-            targetEvent: ev,
-            clickOutsideToClose: false,
-            fullscreen: true,
-            multiple: true
-                //  directive:importFromExcel
-          })
-          .then(function() {
-              //Do nothing for now.
-          }, function() {
-              //still do nothing
-          });
-        }
-
-        function showAlert(title,content){
-          $mdDialog.show(
-            $mdDialog.alert()
-            .title(title)
-            .textContent(content)
-            .ariaLabel('Alert Dialog')
-            .ok('Got It!'));
-        }
-
-        function importFromExcel(event, filePath, funcName) {
-          if (event.target.files.length == 0) {
-              return false;
-          }
-          alasql('SELECT * FROM FILE(?,{headers:true})', [event], function (data) {
-              $rootScope.employeeList = data;
-          });
-        }
-
-        function exportToExcel(fileName, targetData) {
-
-          if (!angular.isArray(targetData)) {
-              $log.error('Can not export error type data to excel.');
-              return;
-          }
-
-          alasql('SELECT * INTO XLSX("'+ fileName + '.xlsx",{headers:true}) FROM ?', [targetData],function (response) {
-
-          });
-      }
-  }
-})();
-
-(function () {
-    'use strict';
-
-    angular
-        .module('fuse')
-        .factory('ReportBuilderService', ReportBuilderService);
-
-    ReportBuilderService.$inject = ['$http', '$log', '$q', '$rootScope', 'lovefield'];
-
-    function ReportBuilderService($http, $log, $q, $rootScope,StoreService) {
-        var imageUrl;
-        var imageString;
-        var companyName;
-        getLogoAndcompanyName();
-        toDataURL('app/ReportLogo/logo.png', function (dataUrl) {
-            console.log(dataUrl);
-            imageUrl = dataUrl;
-        });
-        var service = {
-            BuildPdfContent: BuildPdfContent,
-            buildReportHeader: buildReportHeader,
-            BuildPDFText: BuildPDFText,
-            buildHtmlToPdfReport: buildHtmlToPdfReport,
-            displayOrPrintPdf:displayOrPrintPdf,
-            getLogoAndcompanyName:getLogoAndcompanyName
-        };
-
-        return service;
-
-        function getReportLogo(){
-
-          StoreService.GetGlobalConstants('ImageUrl').then(function(response){
-              if (response.length > 0) {
-                imageString = response[0].Value;
-              }
-          });
-        }
-
-        function getReporHeader(){
-            StoreService.GetGlobalConstants('ReportHeader').then(function(response){
-                if (response.length > 0) {
-                  companyName = response[0].Value;
-                }
-            });
-        }
-
-        function getLogoAndcompanyName(){
-          getReportLogo();
-          getReporHeader();
-        }
-
-
-        function BuildPdfContent(reportObject, marginData, lineSpanLength) {
-            var pdfContent = {};
-            var content = [];
-            var parentGroupHead = {};
-            var groupHead = [];
-            var allParents = reportObject.parentGroupProperty == undefined ? [{ Title: 'N/A' }] : _.uniq(reportObject.reportData.map(function (reportDataEntry) {
-                return reportDataEntry[reportObject.parentGroupProperty];
-            }));
-
-            for (var i = 0; i < allParents.length; i++) {
-                //TODO: push parent title here... : allParents[i] ONLY if reportObject.parentGroupProperty is defined
-
-                var parentSum; // _.sumBy(dataForParent,reportObject.summingProperty);
-                var dataForParent = reportObject.parentGroupProperty == undefined ? reportObject.reportData : _.filter(reportObject.reportData, function (o) { return o[reportObject.parentGroupProperty] == allParents[i]; });
-                if (reportObject.parentGroupProperty != undefined) {
-                    content.push({ width: "*", text: reportObject.parentGroupProperty + ' ----------- ' + (allParents[i] == undefined ? ' N/A' : allParents[i]), margin: [5, 15, 2, 2] });
-                    //   parentSum =  _.sumBy(dataForParent,reportObject.summingProperty);
-                }
-                //  groupHead = reportObject.parentGroupProperty != undefined?[{width:"*", text: allParents[i]==undefined?'N/A':allParents[i],margin: [45, 2, 2, 2] }]:[""];
-                //   var groupName = allParents[i]==undefined?'N/A':allParents[i];
-                var allChidren = reportObject.childGroupProperty == undefined ? [{ Title: 'N/A' }] : _.uniq(dataForParent.map(function (reportDataEntry) {
-                    return reportDataEntry[reportObject.childGroupProperty];
-                }));
-
-
-                //  var childSum = _.sumBy(dataForChild,reportDataEntry.summingProperty);
-                for (var j = 0; j < allChidren.length; j++) {
-
-
-                    var dataForChild = reportObject.childGroupProperty == undefined ? dataForParent : _.filter(dataForParent, function (o) { return o[reportObject.childGroupProperty] == allChidren[j]; });
-                    //TODO: Push child title here...: allChidren[j] ONLY if reportObject.childGroupProperty is defined
-
-                    if (reportObject.childGroupProperty != undefined) {
-                        content.push({ width: "*", text: reportObject.childGroupProperty + ' ----------- ' + (allChidren[j] == undefined ? ' N/A' : allChidren[j]), margin: [100, 2, 2, 2] });
-                        //   parentSum =  _.sumBy(dataForParent,reportObject.summingProperty);
-                    }
-
-                    content.push(buildtable({ data: dataForChild, columns: reportObject.columns, width: reportObject.width, parentGroupProperty: reportObject.parentGroupProperty, parentGroupHead: allParents[i] }, marginData));
-                    if (reportObject.childGroupProperty != undefined && reportObject.summingProperty != undefined) {
-                        content.push({ width: "*", alignment: 'right', text: allChidren[j] + ' Total -----------' + _.floor(_.sumBy(dataForChild, reportObject.summingProperty)) });
-                    }
-                }
-
-                if (reportObject.parentGroupProperty != undefined && reportObject.summingProperty != undefined) {
-
-                    var groupName = allParents[i] == undefined ? ' N/A' : allParents[i];
-                    content.push({ width: "*", alignment: 'right', text: groupName + ' Total -----------: ' + _.floor(_.sumBy(dataForParent, reportObject.summingProperty), 2) });
-                }
-            }
-
-            //  var groupHead = {width:"*", text: departmentName==undefined?'N/A':departmentName,margin: [45, 2, 2, 2] };
-            pdfContent.content = content
-            //    pdfContent.content.push(content);
-
-            return pdfContent;
-        }
-
-        function toDataURL(src, callback, outputFormat) {
-
-            var img = new Image();
-            img.crossOrigin = 'Anonymous';
-            img.onload = function () {
-                var canvas = document.createElement('CANVAS');
-                var ctx = canvas.getContext('2d');
-                var dataURL;
-                canvas.height = 40;
-                canvas.width = 40;
-                ctx.scale(40 / this.naturalWidth, 40 / this.naturalHeight);
-
-                ctx.drawImage(this, 0, 0);
-                dataURL = canvas.toDataURL(outputFormat);
-                callback(dataURL);
-            };
-            img.src = src;
-        }
-
-        function buildReportHeader(reportTitle, lineSpanLength,logoMargin,titleMargin) {
-            companyName = companyName || 'WorkForce Group';
-            imageString = imageString||imageUrl;
-            debugger;
-            return [
-                {
-                    table: {
-                        widths: ['auto', lineSpanLength-60],
-                        body: [
-                            [{
-                                image: imageString //'/src/app/ReportLogo/logo.png'
-                            },
-                            {
-                                stack: [{
-                                    alignment: 'center',
-                                    style: 'h1',
-                                    text: companyName,
-                                    margin:[0, 13, 0, 0]
-                                }]
-                            }
-                            ]
-                        ]
-                    },margin: logoMargin|| [0, 5, 0, 0]
-                }, { canvas: [{ type: 'line', x1: 0, y1: 5, x2: lineSpanLength, y2: 5, lineWidth: 1 }] ,margin:titleMargin|| [0, 5, 0, 0]},
-                {
-                    alignment: 'center',
-                    style: 'header',
-                    text: reportTitle,
-                    margin:[0, 8, 0, 0]
-                },
-                { canvas: [{ type: 'line', x1: 0, y1: 5, x2: lineSpanLength, y2: 5, lineWidth: 1 }],margin:titleMargin||[0, 5, 0, 0] }
-            ];
-        }
-
-        function BuildPDFText(text, style, alignment, margin, bold, canvasFormat) {
-            return {
-                text: text,
-                style: style,
-                alignment: alignment,
-                margin: margin,
-                bold: bold,
-                canvas: canvasFormat
-            }
-        }
-
-
-        function buildtable(tableData, marginData) {
-            if (marginData != undefined) { marginData = marginData } else { marginData = [0, 5, 0, 0] }
-            for (var i = 0; i < tableData.data.length; i++) {
-                return {
-                    columns: [
-                        //  { width: '*', text: '' },
-                        {
-                            width: 'auto',
-                            table: {
-                                widths: tableData.width,
-                                headerRows: 1,
-
-                                body: buildTableBody(tableData.data, tableData.columns)
-                            },
-                            margin: marginData,
-                            fontSize: 10
-                        },
-                        { width: '*', text: '' }
-
-                    ]
-                };
-            }
-
-        }
-
-        function buildTableBody(data, columns) {
-            var body = [];
-            body.push(columns);
-            data.forEach(function (row) {
-                var dataRow = [];
-                columns.forEach(function (column) {
-                    if (row[column] == undefined) {
-                        row[column] = '';
-                    }
-                    dataRow.push(row[column].toString());
-                });
-                body.push(dataRow);
-            });
-            return body;
-        }
-
-    }
-})();
-
 (function ()
 {
     'use strict';
@@ -14395,28 +14395,28 @@ $templateCache.put("app/main/dialogs/appraisalform.html","<div ng-show=\"process
 $templateCache.put("app/core/directives/ms-material-color-picker/ms-material-color-picker.html","<md-menu md-position-mode=\"target-right target\"><md-button aria-label=\"Row Color\" md-menu-origin \nng-click=\"$mdOpenMenu($event)\" ng-class=\"selectedColor.class\"><span ng-show=\"selectedColor.palette\">\n{{selectedColor.palette}} {{selectedColor.hue}} </span><span ng-show=\"!selectedColor.palette\">Select Color</span>\n</md-button><md-menu-content class=\"ms-material-color-picker-menu-content\" layout-column><header \nng-class=\"selectedColor.class || \'md-accent-bg\'\" class=\"md-whiteframe-4dp\" layout=\"row\" \nlayout-align=\"space-between center\"><md-button md-prevent-menu-close ng-click=\"activateHueSelection(false,false)\" \nclass=\"md-icon-button\" ng-class=\"{\'hidden\':!selectedPalette}\" aria-label=\"Palette\"><md-icon \nmd-font-icon=\"icon-arrow-left\" class=\"s20\"></md-icon></md-button><span ng-if=\"selectedColor.palette\">\n{{selectedColor.palette}} {{selectedColor.hue}} </span><span ng-if=\"!selectedColor.palette\">Select Color</span>\n<md-button class=\"remove-color-button md-icon-button\" ng-click=\"removeColor()\" aria-label=\"Remove Color\"><md-icon \nmd-font-icon=\"icon-delete\" class=\"s20\"></md-icon></md-button></header><div class=\"colors\" ms-scroll><div \nng-if=\"!selectedPalette\" layout=\"row\" layout-wrap><div class=\"color\" ng-class=\"\'md-\'+palette+\'-500-bg\'\" \nng-repeat=\"(palette, hues) in palettes\" ng-click=\"activateHueSelection(palette,hues)\" layout=\"row\" \nlayout-align=\"start end\" md-prevent-menu-close md-ink-ripple><span class=\"label\">{{palette}}</span></div></div><div \nng-if=\"selectedPalette\" layout=\"row\" layout-wrap><div class=\"color\" ng-class=\"\'md-\'+selectedPalette+\'-\'+hue+\'-bg\'\" \nng-repeat=\"(hue, values) in selectedHues\" ng-click=\"selectColor(selectedPalette,hue)\" layout=\"row\" \nlayout-align=\"start end\" md-ink-ripple><span class=\"label\">{{hue}} </span><i \nng-if=\"selectedPalette == selectedColor.palette && hue == selectedColor.hue\" class=\"s16 icon-check\"></i></div></div>\n</div></md-menu-content></md-menu>");
 $templateCache.put("app/core/directives/ms-search-bar/ms-search-bar.html","<div flex layout=\"row\" layout-align=\"start center\"><label for=\"ms-search-bar-input\"><md-icon \nid=\"ms-search-bar-expander\" md-font-icon=\"icon-magnify\" class=\"icon s24\"></md-icon><md-icon \nid=\"ms-search-bar-collapser\" md-font-icon=\"icon-close\" class=\"icon s24\"></md-icon></label><input \nid=\"ms-search-bar-input\" type=\"text\" ng-model=\"global.search\" placeholder=\"Search\" translate \ntranslate-attr-placeholder=\"TOOLBAR.SEARCH\" flex></div>");
 $templateCache.put("app/main/apps/dashboard/dashboard.html","<div layout=\"row\" id=\"patient-billing\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"row\" layout-align=\"center\"><h3></h3></md-card><md-content class=\"body\" layout=\"column\" \nflex layout-margin ms-scroll><fieldset id=\"viewfieldset\"><div class=\"personal-profile\" layout=\"row\"><div \nclass=\"profile-details\" layout=\"column\" flex><div class=\"header\"><h1>{{vm.user.firstname+\' \'+vm.user.lastname}}</h1>\n</div><div class=\"details\" layout=\"row\" layout-wrap><div flex=\"40\"><p style=\"font-weight: bold; font-size:20px\">Email:\n</p><span>{{vm.user.email}}</span></div><div flex=\"40\"><p style=\"font-weight: bold; font-size:20px\">Line Of Business:\n</p><span>{{vm.user.personalInfo.lob}}</span></div></div><div class=\"details\" layout=\"row\" layout-wrap><div flex=\"40\">\n<p style=\"font-weight: bold; font-size:20px\">Recruitment Date:</p><span>{{vm.user.personalInfo.recruitmentDate|date}}\n</span></div><div flex=\"40\"><p style=\"font-weight: bold; font-size:20px\">Location/based at:</p><span>\n{{vm.user.personalInfo.location}}</span></div></div></div></div></fieldset></md-content></div></div>");
+$templateCache.put("app/navigation/layouts/vertical-navigation/navigation.html","<md-toolbar class=\"navigation-header md-whiteframe-1dp\" layout=\"row\" layout-align=\"space-between center\"><div \nclass=\"logo\" layout=\"row\" layout-align=\"start center\"><span class=\"logo-image\"><img \nsrc=\"./assets/images/logos/logo.png\"></span><md-menu md-position-mode=\"target-left target\" md-offset=\"0 50\"><md-button \nid=\"logoutButton\" aria-label=\"Open demo menu\" class=\"md-icon-button\" ng-click=\"$mdMenu.open($event)\"><md-icon \nmd-svg-icon=\"./assets/icons/svg/more_vert.svg\"></md-icon></md-button><md-menu-content ng-mouseleave=\"$mdMenu.close()\">\n<md-menu-divider></md-menu-divider><md-menu-item data-ui-sref-active=\"active\"><md-button ng-click=\"vm.signOut()\">\n<ng-md-icon icon=\"logout\" md-menu-align-target></ng-md-icon>Sign out</md-button></md-menu-item></md-menu-content>\n</md-menu></div></md-toolbar><ms-navigation class=\"scrollable\" folded=\"vm.folded\" ms-scroll=\"vm.msScrollOptions\">\n</ms-navigation>");
 $templateCache.put("app/navigation/layouts/horizontal-navigation/navigation.html","<div layout=\"row\" layout-align=\"start center\"><ms-navigation-horizontal></ms-navigation-horizontal></div>");
-$templateCache.put("app/navigation/layouts/vertical-navigation/navigation.html","<md-toolbar class=\"navigation-header md-whiteframe-1dp\" layout=\"row\" layout-align=\"space-between center\"><div \nclass=\"logo\" layout=\"row\" layout-align=\"start center\"><span class=\"logo-image\"><img \nsrc=\"./assets/images/logos/logo.png\"> </span><span class=\"logo-text\">Dashboard</span><md-menu \nmd-position-mode=\"target-left target\" md-offset=\"0 50\"><md-button id=\"logoutButton\" aria-label=\"Open demo menu\" \nclass=\"md-icon-button\" ng-click=\"$mdMenu.open($event)\"><md-icon md-svg-icon=\"./assets/icons/svg/more_vert.svg\">\n</md-icon></md-button><md-menu-content ng-mouseleave=\"$mdMenu.close()\"><md-menu-divider></md-menu-divider><md-menu-item\n data-ui-sref-active=\"active\"><md-button ng-click=\"vm.signOut()\"><ng-md-icon icon=\"logout\" md-menu-align-target>\n</ng-md-icon>Sign out</md-button></md-menu-item></md-menu-content></md-menu></div></md-toolbar><ms-navigation \nclass=\"scrollable\" folded=\"vm.folded\" ms-scroll=\"vm.msScrollOptions\"></ms-navigation>");
-$templateCache.put("app/toolbar/layouts/content-with-toolbar/toolbar.html","<div layout=\"row\" layout-align=\"space-between center\"><div layout=\"row\" layout-align=\"start center\"><div class=\"logo\" \nlayout=\"row\" layout-align=\"start center\"><span class=\"logo-image\">F</span> <span class=\"logo-text\">FUSE</span></div>\n<md-progress-circular id=\"toolbar-progress\" ng-if=\"$root.loadingProgress\" class=\"md-accent\" md-mode=\"indeterminate\" \nmd-diameter=\"64\"></md-progress-circular></div><div layout=\"row\" layout-align=\"start center\"><div \nclass=\"toolbar-separator\"></div><ms-search-bar></ms-search-bar><div class=\"toolbar-separator\"></div><md-menu-bar \nid=\"user-menu\"><md-menu md-position-mode=\"left bottom\"><md-button class=\"user-button\" ng-click=\"$mdOpenMenu()\" \naria-label=\"User settings\" translate translate-attr-aria-label=\"TOOLBAR.USER_SETTINGS\"><div layout=\"row\" \nlayout-align=\"space-between center\"><div class=\"avatar-wrapper\"><img md-menu-align-target class=\"avatar\" \nsrc=\"assets/images/avatars/profile.jpg\"><md-icon md-font-icon ng-class=\"vm.userStatus.icon\" \nng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon status s16\"></md-icon></div><span class=\"username\" hide-xs>\nJohn Doe</span><md-icon md-font-icon=\"icon-chevron-down\" class=\"icon s16\" hide-xs></md-icon></div></md-button>\n<md-menu-content width=\"3\"><md-menu-item class=\"md-indent\" ui-sref=\"app.pages_profile\"><md-icon \nmd-font-icon=\"icon-account\" class=\"icon\"></md-icon><md-button>My Profile</md-button></md-menu-item><md-menu-item \nclass=\"md-indent\" ui-sref=\"app.mail\"><md-icon md-font-icon=\"icon-email\" class=\"icon\"></md-icon><md-button>Inbox\n</md-button></md-menu-item><md-menu-item class=\"md-indent\"><md-icon md-font-icon ng-class=\"vm.userStatus.icon\" \nng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon\"></md-icon><md-menu id=\"user-status-menu\"><md-button \nng-click=\"$mdOpenMenu()\" class=\"status\" ng-class=\"vm.userStatus.class\">{{vm.userStatus.title}}</md-button>\n<md-menu-content width=\"2\"><md-menu-item class=\"status md-indent\" ng-class=\"{\'selected\': status === vm.userStatus}\" \nng-repeat=\"status in vm.userStatusOptions\"><md-icon md-font-icon=\"{{status.icon}}\" ng-style=\"{\'color\': status.color }\" \nclass=\"icon\"></md-icon><md-button ng-click=\"vm.setUserStatus(status)\">{{status.title}}</md-button></md-menu-item>\n</md-menu-content></md-menu></md-menu-item><md-menu-divider></md-menu-divider><md-menu-item class=\"md-indent\"><md-icon \nmd-font-icon=\"icon-logout\" class=\"icon\"></md-icon><md-button ng-click=\"vm.logout()\">Logout</md-button></md-menu-item>\n</md-menu-content></md-menu></md-menu-bar><div class=\"toolbar-separator\"></div><md-menu id=\"language-menu\" \nmd-offset=\"0 72\" md-position-mode=\"target-right target\"><md-button class=\"language-button\" ng-click=\"$mdOpenMenu()\" \naria-label=\"Language\" md-menu-origin md-menu-align-target><div layout=\"row\" layout-align=\"center center\"><img \nclass=\"flag\" ng-src=\"assets/images/flags/{{vm.selectedLanguage.flag}}.png\"> <span class=\"iso\">\n{{vm.selectedLanguage.code}}</span></div></md-button><md-menu-content width=\"3\" id=\"language-menu-content\">\n<md-menu-item ng-repeat=\"(iso, lang) in vm.languages\"><md-button ng-click=\"vm.changeLanguage(lang)\" \naria-label=\"{{lang.title}}\" translate translate-attr-aria-label=\"{{lang.title}}\"><span layout=\"row\" \nlayout-align=\"start center\"><img class=\"flag\" ng-src=\"assets/images/flags/{{lang.flag}}.png\"> <span \ntranslate=\"{{lang.translation}}\">{{lang.title}}</span></span></md-button></md-menu-item></md-menu-content></md-menu>\n<div class=\"toolbar-separator\"></div><md-button id=\"quick-panel-toggle\" class=\"md-icon-button\" \nng-click=\"vm.toggleSidenav(\'quick-panel\')\" aria-label=\"Toggle quick panel\" translate \ntranslate-attr-aria-label=\"TOOLBAR.TOGGLE_QUICK_PANEL\"><md-icon md-font-icon=\"icon-format-list-bulleted\" class=\"icon\">\n</md-icon></md-button></div></div>");
 $templateCache.put("app/toolbar/layouts/horizontal-navigation/toolbar.html","<div layout=\"row\" layout-align=\"space-between center\"><div layout=\"row\" layout-align=\"start center\"><div \nclass=\"navigation-toggle\" hide-gt-sm><md-button class=\"md-icon-button\" ng-click=\"vm.toggleHorizontalMobileMenu()\" \naria-label=\"Toggle Mobile Navigation\"><md-icon md-font-icon=\"icon-menu\"></md-icon></md-button></div><div class=\"logo\" \nlayout=\"row\" layout-align=\"start center\"><span class=\"logo-image\">F</span> <span class=\"logo-text\">FUSE</span></div>\n<md-progress-circular id=\"toolbar-progress\" ng-if=\"$root.loadingProgress\" class=\"md-accent\" md-mode=\"indeterminate\" \nmd-diameter=\"64\"></md-progress-circular></div><div layout=\"row\" layout-align=\"start center\"><ms-search-bar>\n</ms-search-bar><md-menu-bar id=\"user-menu\"><md-menu md-position-mode=\"left bottom\"><md-button class=\"user-button\" \nng-click=\"$mdOpenMenu()\" aria-label=\"User settings\" translate translate-attr-aria-label=\"TOOLBAR.USER_SETTINGS\"><div \nlayout=\"row\" layout-align=\"space-between center\"><div class=\"avatar-wrapper\"><img md-menu-align-target class=\"avatar\" \nsrc=\"assets/images/avatars/profile.jpg\"><md-icon md-font-icon ng-class=\"vm.userStatus.icon\" \nng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon status s16\"></md-icon></div><span class=\"username\" hide-xs>\nJohn Doe</span><md-icon md-font-icon=\"icon-chevron-down\" class=\"icon s16\" hide-xs></md-icon></div></md-button>\n<md-menu-content width=\"3\"><md-menu-item class=\"md-indent\" ui-sref=\"app.pages_profile\"><md-icon \nmd-font-icon=\"icon-account\" class=\"icon\"></md-icon><md-button>My Profile</md-button></md-menu-item><md-menu-item \nclass=\"md-indent\" ui-sref=\"app.mail\"><md-icon md-font-icon=\"icon-email\" class=\"icon\"></md-icon><md-button>Inbox\n</md-button></md-menu-item><md-menu-item class=\"md-indent\"><md-icon md-font-icon ng-class=\"vm.userStatus.icon\" \nng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon\"></md-icon><md-menu id=\"user-status-menu\"><md-button \nng-click=\"$mdOpenMenu()\" class=\"status\" ng-class=\"vm.userStatus.class\">{{vm.userStatus.title}}</md-button>\n<md-menu-content width=\"2\"><md-menu-item class=\"status md-indent\" ng-class=\"{\'selected\': status === vm.userStatus}\" \nng-repeat=\"status in vm.userStatusOptions\"><md-icon md-font-icon=\"{{status.icon}}\" ng-style=\"{\'color\': status.color }\" \nclass=\"icon\"></md-icon><md-button ng-click=\"vm.setUserStatus(status)\">{{status.title}}</md-button></md-menu-item>\n</md-menu-content></md-menu></md-menu-item><md-menu-divider></md-menu-divider><md-menu-item class=\"md-indent\"><md-icon \nmd-font-icon=\"icon-logout\" class=\"icon\"></md-icon><md-button ng-click=\"vm.logout()\">Logout</md-button></md-menu-item>\n</md-menu-content></md-menu></md-menu-bar><md-menu id=\"language-menu\" md-offset=\"0 72\" \nmd-position-mode=\"target-right target\"><md-button class=\"language-button\" ng-click=\"$mdOpenMenu()\" \naria-label=\"Language\" md-menu-origin md-menu-align-target><div layout=\"row\" layout-align=\"center center\"><img \nclass=\"flag\" ng-src=\"assets/images/flags/{{vm.selectedLanguage.flag}}.png\"> <span class=\"iso\">\n{{vm.selectedLanguage.code}}</span></div></md-button><md-menu-content width=\"3\" id=\"language-menu-content\">\n<md-menu-item ng-repeat=\"(iso, lang) in vm.languages\"><md-button ng-click=\"vm.changeLanguage(lang)\" \naria-label=\"{{lang.title}}\" translate translate-attr-aria-label=\"{{lang.title}}\"><span layout=\"row\" \nlayout-align=\"start center\"><img class=\"flag\" ng-src=\"assets/images/flags/{{lang.flag}}.png\"> <span \ntranslate=\"{{lang.translation}}\">{{lang.title}}</span></span></md-button></md-menu-item></md-menu-content></md-menu>\n<md-button id=\"quick-panel-toggle\" class=\"md-icon-button\" ng-click=\"vm.toggleSidenav(\'quick-panel\')\" \naria-label=\"Toggle quick panel\" translate translate-attr-aria-label=\"TOOLBAR.TOGGLE_QUICK_PANEL\"><md-icon \nmd-font-icon=\"icon-format-list-bulleted\" class=\"icon\"></md-icon></md-button></div></div>");
+$templateCache.put("app/toolbar/layouts/content-with-toolbar/toolbar.html","<div layout=\"row\" layout-align=\"space-between center\"><div layout=\"row\" layout-align=\"start center\"><div class=\"logo\" \nlayout=\"row\" layout-align=\"start center\"><span class=\"logo-image\">F</span> <span class=\"logo-text\">FUSE</span></div>\n<md-progress-circular id=\"toolbar-progress\" ng-if=\"$root.loadingProgress\" class=\"md-accent\" md-mode=\"indeterminate\" \nmd-diameter=\"64\"></md-progress-circular></div><div layout=\"row\" layout-align=\"start center\"><div \nclass=\"toolbar-separator\"></div><ms-search-bar></ms-search-bar><div class=\"toolbar-separator\"></div><md-menu-bar \nid=\"user-menu\"><md-menu md-position-mode=\"left bottom\"><md-button class=\"user-button\" ng-click=\"$mdOpenMenu()\" \naria-label=\"User settings\" translate translate-attr-aria-label=\"TOOLBAR.USER_SETTINGS\"><div layout=\"row\" \nlayout-align=\"space-between center\"><div class=\"avatar-wrapper\"><img md-menu-align-target class=\"avatar\" \nsrc=\"assets/images/avatars/profile.jpg\"><md-icon md-font-icon ng-class=\"vm.userStatus.icon\" \nng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon status s16\"></md-icon></div><span class=\"username\" hide-xs>\nJohn Doe</span><md-icon md-font-icon=\"icon-chevron-down\" class=\"icon s16\" hide-xs></md-icon></div></md-button>\n<md-menu-content width=\"3\"><md-menu-item class=\"md-indent\" ui-sref=\"app.pages_profile\"><md-icon \nmd-font-icon=\"icon-account\" class=\"icon\"></md-icon><md-button>My Profile</md-button></md-menu-item><md-menu-item \nclass=\"md-indent\" ui-sref=\"app.mail\"><md-icon md-font-icon=\"icon-email\" class=\"icon\"></md-icon><md-button>Inbox\n</md-button></md-menu-item><md-menu-item class=\"md-indent\"><md-icon md-font-icon ng-class=\"vm.userStatus.icon\" \nng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon\"></md-icon><md-menu id=\"user-status-menu\"><md-button \nng-click=\"$mdOpenMenu()\" class=\"status\" ng-class=\"vm.userStatus.class\">{{vm.userStatus.title}}</md-button>\n<md-menu-content width=\"2\"><md-menu-item class=\"status md-indent\" ng-class=\"{\'selected\': status === vm.userStatus}\" \nng-repeat=\"status in vm.userStatusOptions\"><md-icon md-font-icon=\"{{status.icon}}\" ng-style=\"{\'color\': status.color }\" \nclass=\"icon\"></md-icon><md-button ng-click=\"vm.setUserStatus(status)\">{{status.title}}</md-button></md-menu-item>\n</md-menu-content></md-menu></md-menu-item><md-menu-divider></md-menu-divider><md-menu-item class=\"md-indent\"><md-icon \nmd-font-icon=\"icon-logout\" class=\"icon\"></md-icon><md-button ng-click=\"vm.logout()\">Logout</md-button></md-menu-item>\n</md-menu-content></md-menu></md-menu-bar><div class=\"toolbar-separator\"></div><md-menu id=\"language-menu\" \nmd-offset=\"0 72\" md-position-mode=\"target-right target\"><md-button class=\"language-button\" ng-click=\"$mdOpenMenu()\" \naria-label=\"Language\" md-menu-origin md-menu-align-target><div layout=\"row\" layout-align=\"center center\"><img \nclass=\"flag\" ng-src=\"assets/images/flags/{{vm.selectedLanguage.flag}}.png\"> <span class=\"iso\">\n{{vm.selectedLanguage.code}}</span></div></md-button><md-menu-content width=\"3\" id=\"language-menu-content\">\n<md-menu-item ng-repeat=\"(iso, lang) in vm.languages\"><md-button ng-click=\"vm.changeLanguage(lang)\" \naria-label=\"{{lang.title}}\" translate translate-attr-aria-label=\"{{lang.title}}\"><span layout=\"row\" \nlayout-align=\"start center\"><img class=\"flag\" ng-src=\"assets/images/flags/{{lang.flag}}.png\"> <span \ntranslate=\"{{lang.translation}}\">{{lang.title}}</span></span></md-button></md-menu-item></md-menu-content></md-menu>\n<div class=\"toolbar-separator\"></div><md-button id=\"quick-panel-toggle\" class=\"md-icon-button\" \nng-click=\"vm.toggleSidenav(\'quick-panel\')\" aria-label=\"Toggle quick panel\" translate \ntranslate-attr-aria-label=\"TOOLBAR.TOGGLE_QUICK_PANEL\"><md-icon md-font-icon=\"icon-format-list-bulleted\" class=\"icon\">\n</md-icon></md-button></div></div>");
 $templateCache.put("app/toolbar/layouts/vertical-navigation/toolbar.html","<div layout=\"row\" class=\"navigation-header\" layout-align=\"start center\" style=\"height: 48px\"><div layout=\"row\" \nlayout-align=\"start center\" flex><md-button id=\"navigation-toggle\" class=\"md-icon-button\" \nng-click=\"vm.toggleSidenav(\'navigation\')\" hide-gt-sm aria-label=\"Toggle navigation\" translate \ntranslate-attr-aria-label=\"TOOLBAR.TOGGLE_NAVIGATION\"><md-icon md-font-icon=\"icon-menu\" class=\"icon\"></md-icon>\n</md-button><div class=\"form-title\" style=\"margin-left: 15px;font-size: 21px\">{{vm.pageTitle}}</div></div><div \nlayout=\"row\" layout-align=\"start center\"><md-menu-bar id=\"user-menu\"><md-menu md-position-mode=\"left bottom\"><md-button\n class=\"user-button\" ng-click=\"$mdOpenMenu()\" aria-label=\"User settings\" translate \ntranslate-attr-aria-label=\"TOOLBAR.USER_SETTINGS\"><div layout=\"row\" layout-align=\"space-between center\"><div \nclass=\"avatar-wrapper\"><img md-menu-align-target class=\"avatar\" src=\"assets/images/avatars/profile.jpg\"><md-icon \nmd-font-icon ng-class=\"vm.userStatus.icon\" ng-style=\"{\'color\': vm.userStatus.color }\" class=\"icon status s16\">\n</md-icon></div><span class=\"username\" hide-xs>{{vm.loggedInStaff}}</span><md-icon md-font-icon=\"icon-chevron-down\" \nclass=\"icon s16\" hide-xs></md-icon></div></md-button><md-menu-content width=\"3\"><md-menu-item class=\"md-indent\" \nng-show=\"vm.shiftNumber\" ui-sref=\"app.pages_profile\"><md-icon md-font-icon=\"icon-timetable\" class=\"icon\"></md-icon>\n<span style=\"margin-left: 48px; line-height: 2.9\">{{vm.shiftNumber}}</span></md-menu-item><md-menu-divider>\n</md-menu-divider><md-menu-item class=\"md-indent\"><md-icon md-font-icon=\"icon-logout\" class=\"icon\"></md-icon><md-button\n ng-click=\"vm.logout()\" translate=\"TOOLBAR.SIGN_OUT\"></md-button></md-menu-item></md-menu-content></md-menu>\n</md-menu-bar><div><md-icon md-font-icon=\"icon-hospital-marker\" ng-show=\"vm.location\" class=\"icon\" \nstyle=\"margin-right: 5px; margin-left: 15px\"></md-icon><span style=\"margin-right: 25px; font-size: 14px\">\n{{vm.location}}</span></div></div></div>");
 $templateCache.put("app/core/directives/ms-navigation/templates/horizontal.html","<div class=\"navigation-toggle\" hide-gt-sm><md-button class=\"md-icon-button\" ng-click=\"vm.toggleHorizontalMobileMenu()\" \naria-label=\"Toggle Mobile Navigation\"><md-icon md-font-icon=\"icon-menu\"></md-icon></md-button></div><ul \nclass=\"horizontal\"><li ng-repeat=\"node in vm.navigation\" ms-navigation-horizontal-node=\"node\" \nng-class=\"{\'has-children\': vm.hasChildren}\" ng-include=\"\'navigation-horizontal-nested.html\'\"></li></ul><script \ntype=\"text/ng-template\" id=\"navigation-horizontal-nested.html\">\n<div ms-navigation-horizontal-item layout=\"row\" ng-if=\"!vm.isHidden()\">\n\n        <div class=\"ms-navigation-horizontal-button\" ng-if=\"!node.uisref && node.title\"\n             ng-class=\"{\'active md-accent-bg\': vm.isActive}\">\n            <i class=\"icon s18 {{node.icon}}\" ng-if=\"node.icon\"></i>\n            <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n            <span class=\"badge white-fg\" style=\"background: {{node.badge.color}}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n            <i class=\"icon-chevron-right s18 arrow\" ng-if=\"vm.hasChildren\"></i>\n        </div>\n\n        <a class=\"ms-navigation-horizontal-button\" ui-sref=\"{{node.uisref}}\" ui-sref-active=\"active md-accent-bg\"\n           ng-class=\"{\'active md-accent-bg\': vm.isActive}\"\n           ng-if=\"node.uisref && node.title\">\n            <i class=\"icon s18 {{node.icon}}\" ng-if=\"node.icon\"></i>\n            <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n            <span class=\"badge white-fg\" style=\"background: {{node.badge.color}}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n            <i class=\"icon-chevron-right s18 arrow\" ng-if=\"vm.hasChildren\"></i>\n        </a>\n\n    </div>\n\n    <ul ng-if=\"vm.hasChildren && !vm.isHidden()\">\n        <li ng-repeat=\"node in node.children\" ms-navigation-horizontal-node=\"node\"\n            ng-class=\"{\'has-children\': vm.hasChildren}\"\n            ng-include=\"\'navigation-horizontal-nested.html\'\"></li>\n    </ul>\n</script>");
-$templateCache.put("app/core/directives/ms-navigation/templates/vertical.html","<ul><li ng-repeat=\"node in vm.navigation\" ms-navigation-node=\"node\" \nng-class=\"{\'collapsed\': vm.collapsed, \'has-children\': vm.hasChildren}\" ng-include=\"\'navigation-nested.html\'\"></li></ul>\n<script type=\"text/ng-template\" id=\"navigation-nested.html\">\n<div ms-navigation-item layout=\"row\" ng-if=\"!vm.isHidden()\">\n\n      <div class=\"ms-navigation-button\" ng-if=\"!node.uisref && node.title\">\n          <i class=\"icon s16 {{node.icon}}\" ng-if=\"node.icon\"></i>\n          <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n          <span class=\"badge white-fg\" ng-style=\"{\'background\': node.badge.color}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n          <i class=\"icon-chevron-right s16 arrow\" ng-if=\"vm.collapsable && vm.hasChildren\"></i>\n      </div>\n\n      <a class=\"ms-navigation-button\" ui-sref=\"{{node.uisref}}\" ui-sref-active=\"active md-accent-bg\"\n         ng-if=\"node.uisref && node.title\">\n          <i class=\"icon s16 {{node.icon}}\" ng-if=\"node.icon\"></i>\n          <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\n          <span class=\"badge white-fg\" ng-style=\"{\'background\': node.badge.color}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\n          <i class=\"icon-chevron-right s16 arrow\" ng-if=\"vm.collapsable && vm.hasChildren\"></i>\n      </a>\n\n  </div>\n\n  <ul ng-if=\"vm.hasChildren && !vm.isHidden()\">\n      <li ng-repeat=\"node in node.children\" ms-navigation-node=\"node\"\n          ng-class=\"{\'collapsed\': vm.collapsed, \'has-children\': vm.hasChildren}\"\n          ng-include=\"\'navigation-nested.html\'\"></li>\n  </ul>\n</script>");
-$templateCache.put("app/main/apps/appraisals/manageappraisal/manageappraisal.html","<div layout=\"row\" id=\"users\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"></md-card><fieldset><legend>View</legend>\n<md-radio-group layout=\"row\" layout-align=\"center space-between\" ng-model=\"vm.section\"><md-radio-button \nvalue=\"pending\">Pending List</md-radio-button><md-radio-button value=\"reviewd\">Reviewed List</md-radio-button>\n<md-radio-button value=\"approved\">Approved List</md-radio-button></md-radio-group></fieldset><div class=\"table\" \nstyle=\"margin:25px\"><md-table-container><table md-table md-row-select=\"options.rowSelection\" \nmultiple=\"{{options.multiSelect}}\" ng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" \nmd-head md-order=\"query.order\" md-on-reorder=\"logOrder\"><tr md-row><th md-column><span>Full Name</span></th><th \nmd-column><span>Email</span></th><th md-column><span>Line of Business</span></th><th md-column><span>Appraisal Date\n</span></th></tr></thead><tbody md-body><tr md-row md-select=\"user\" md-on-select=\"logItem\" \nmd-auto-select=\"options.autoSelect\" ng-repeat=\"user in users | filter: filter.search | orderBy: query.order \"><td \nmd-cell>{{user.firstname}} {{user.lastname}}</td><td md-cell>{{user.email}}</td><td md-cell>{{user.lob}}</td><td \nmd-cell>{{user.appraisalDate}}</td><td md-cell><md-icon \nng-click=\"vm.getAppraisalDetails(user,$event,\'appraisalform.html\')\" \nmd-svg-src=\"./assets/icons/svg/view-list-button.svg\" class=\"button\">view</md-icon></td></tr></tbody></table>\n<md-table-pagination md-limit=\"query.limit\" md-limit-options=\"limitOptions\" md-page=\"query.page\" \nmd-total=\"{{employees.count}}\" md-page-select=\"options.pageSelect\" md-boundary-links=\"options.boundaryLinks\" \nmd-on-paginate=\"vm.getEmployeeList\"></md-table-pagination></md-table-container></div></div></div>");
-$templateCache.put("app/main/apps/appraisals/newappriasal/newappraisal.html","<md-progress-linear class=\"overlay\" ng-show=\"processingRequest\" md-mode=\"indeterminate\" ng-value=\"please\">\n</md-progress-linear><div layout=\"column\"><ms-form-wizard flex><md-tabs md-dynamic-height \nmd-selected=\"msWizard.selectedIndex\" md-center-tabs=\"true\"><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep1.$invalid\">1\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep1.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 1</span></span></md-tab-label><md-tab-body id=\"supplier-register\" \nclass=\"page\"><form name=\"wizardStep1\" class=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" \nlayout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>\nProfile</h3></md-card><fieldset class=\"profile-details-style\"><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\">\n<label class=\"tiredlabel\"><span class=\"\">*</span> Full Name:</label></div><md-input-container class=\"tiredinput\" \nflex=\"70\"><label></label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.FullName\"></md-input-container>\n</div><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\"><span class=\"\">*</span>\n Line of Business:</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label></label><md-select \nmd-no-asterisk name=\"lob\" ng-model=\"vm.profiledata.lob\"><md-option ng-repeat=\"lob in vm.lobs\" value=\"{{lob}}\">{{lob}}\n</md-option></md-select></md-input-container><div flex=\"20\"><label class=\"tiredlabel\">Location/based at:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"25\"><label></label><md-select md-no-asterisk name=\"location\" \nng-model=\"vm.profiledata.location\"><md-option ng-repeat=\"location in vm.locations\" \nvalue=\"{{location.state +\', \'+location.country}}\">{{location.state +\', \'+location.country}}</md-option></md-select>\n</md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\"><span \nclass=\"\">*</span> Year/period covered</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label></label>\n<input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.periodCovered\"></md-input-container><div flex=\"20\"><label \nclass=\"tiredlabel\">Time in present position:</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label>\n</label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.timeInPresentPosition\"></md-input-container></div>\n<div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\">Recruitment Date:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input md-no-asterisk type=\"date\" name=\"dateOfBirth\" \nng-model=\"vm.profiledata.recruitmentDate\"></md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div \nflex=\"20\"><label class=\"tiredlabel\">Length of service:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.lengthOfService\"></md-input-container></div>\n<div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\">Appraisal venue:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input md-no-asterisk type=\"text\" \nng-model=\"vm.profiledata.appraisalVenue\"></md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div \nflex=\"20\"><label class=\"tiredlabel\">Appraiser:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label>\n</label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.appraiser\"></md-input-container></div></fieldset>\n</form></md-tab-body></md-tab><md-tab><md-tab-label><span class=\"ms-form-wizard-step-label\"><span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep2.$invalid\">2</span> <span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep2.$valid\"><i class=\"icon-check s16\"></i> </span><span \nclass=\"ms-form-wizard-step-text\">Step 2</span></span></md-tab-label><md-tab-body><form name=\"wizardStep2\" \nclass=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\">\n<h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Goals & Objectives</h3></md-card><div \nclass=\"about-section-text\"><p>\nBriefly describe your personal understanding and contributions to the overall objective of the organisation in 2017</p>\n</div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.objective.objectives\" md-select-on-focus></textarea></md-input-container></div></form></md-tab-body>\n</md-tab><md-tab><md-tab-label><span class=\"ms-form-wizard-step-label\"><span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep3.$invalid\">3</span> <span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep3.$valid\"><i class=\"icon-check s16\"></i> </span><span \nclass=\"ms-form-wizard-step-text\">Step 3</span></span></md-tab-label><md-tab-body><form name=\"wizardStep3\" \nms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\">\n<md-icon md-font-icon=\"icon-content-paste\"></md-icon>Self Assessment</h3></md-card><ol><li class=\"number-list-tyle\">\n<div class=\"about-section-text aboutTextStyle\"><p>\nYour Job Summary: Provide a summary of your responsibilities during this period, including significant projects.</p>\n</div><ol class=\"romanStyle\"><li ng-repeat=\"jobsummary in vm.jobsummaries track by $index\"><div layout=\"row\">\n<md-input-container flex=\"70\" class=\"options-style\"><input md-no-asterisk type=\"text\" ng-model=\"jobsummary.summary\">\n</md-input-container><div flex=\"20\"><md-button class=\"\" aria-label=\"remove selected jobsummary\" \nng-click=\"vm.removeSelectedObject(jobsummary,\'jobsummary\')\"><md-icon md-svg-src=\"./assets/icons/svg/added/Delete.svg\" \nclass=\"deletebutton\"></md-icon></md-button></div></div></li></ol><div class=\"about-section-text\"><md-input-container \nflex=\"25\"><md-icon ng-click=\"vm.addNewObject(\'jobsummary\')\" md-svg-src=\"./assets/icons/svg/round-add-button.svg\" \nclass=\"button\"></md-icon></md-input-container></div></li><li class=\"number-list-tyle\"><div class=\"about-section-text\">\n<p>\nAdjusted Responsibilities/Additional Comments: Note any job changes, responsibilities, or projects added since the last update of your job description, plan of work or performance goals/objectives, as well as any special circumstances that provide a context for this performance review.\n</p></div><ol class=\"romanStyle\"><li ng-repeat=\"objective in vm.responsibilities track by $index\"><div layout=\"row\">\n<md-input-container flex=\"70\" class=\"options-style\"><input md-no-asterisk type=\"text\" ng-model=\"objective.comment\">\n</md-input-container><div flex=\"20\"><md-button aria-label=\"remove selected objective\" \nng-click=\"vm.removeSelectedObject(objective,\'responsibility\')\"><md-icon \nmd-svg-src=\"./assets/icons/svg/added/Delete.svg\" class=\"deletebutton\"></md-icon></md-button></div></div></li></ol><div \nclass=\"about-section-text\"><md-input-container flex=\"25\"><md-icon ng-click=\"vm.addNewObject(\'responsibility\')\" \nmd-svg-src=\"./assets/icons/svg/round-add-button.svg\" class=\"button\"></md-icon></md-input-container></div></li><li><div \nclass=\"about-section-text\"><p>\nPerformance Appraisal: Discuss and evaluate your performance against the firm’s objectives. Base your appraisal upon the job summary, adjusted responsibilities/additional comments and your performance goals for the performance cycle.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><ol><li><div class=\"p-appraisal-li\"><p>\nAccomplishment of key responsibilities/deliverables:</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex>\n<md-input-container flex=\"100\"><textarea ng-model=\"vm.performanceAppraisal.accomplishment\" md-select-on-focus>\n</textarea></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nAchievement of the goals established during the past year:</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex>\n<md-input-container flex=\"100\"><textarea ng-model=\"vm.performanceAppraisal.achievement\" md-select-on-focus></textarea>\n<div ng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIdentify areas of exceptional performance on your part that should be particularly noted. Provide specific examples.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.exceptionalPerformance\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIn your current position, can you share an example where you have demonstrated your leadership? Provide specific examples.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.leadership\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIn your current position, can you share an example where you have taken ownership? Provide specific examples.</p></div>\n<div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.ownership\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIdentify areas of your performance needing more attention or improvement. Provide specific examples.</p></div><div \nlayout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.improvement\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nApart from your current role, is there any other role in the organization you will like to function in? Please specify the role, state the reasons for your choice and articulate how you intend to contribute to the goal of the organization by functioning in this role.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.anyOtherRole\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li></ol></div></li></ol></form></md-tab-body></md-tab><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep4.$invalid\">4\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep4.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 4</span></span></md-tab-label><md-tab-body><form \nname=\"wizardStep4\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\"><h3 \nclass=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Founding Philosophy</h3></md-card><ol><li \nclass=\"number-list-tyle\"><div class=\"about-section-text\"><p>\nPlease rate your level of understanding of and/or performance against the firm’s founding philosophy using the following metrics:\n</p><span class=\"about-section-text\">(4 = Exceptional 3 = Good 2 = Below Average 1 = Poor)</span></div>\n<md-table-container><table md-table md-row-select=\"options.rowSelection\" multiple=\"{{options.multiSelect}}\" \nng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" md-head md-order=\"query.order\" \nmd-on-reorder=\"logOrder\"><tr md-row><th md-column md-order-by=\"name\"><span>Creed </span></th><th md-column \nmd-order-by=\"type\"><span>Definitions</span></th><th md-column md-order-by=\"type\"><span>Ratings</span></th></tr></thead>\n<tbody md-body><tr md-row md-select=\"user\" md-on-select=\"logItem\" md-auto-select=\"options.autoSelect\" \nng-repeat=\"philosophy in vm.foundingPhilosophy\"><td md-cell>{{philosophy.name}}</td><td md-cell>\n{{philosophy.definition}}</td><td md-cell><md-radio-group layout=\"row\" layout-align=\"start center\" \nng-checked=\"vm.collectionTypeChanged()\" ng-model=\"philosophy.rating\"><md-radio-button value=\"4\">4</md-radio-button>\n<md-radio-button value=\"3\">3</md-radio-button><md-radio-button value=\"2\">2</md-radio-button><md-radio-button value=\"1\">\n1</md-radio-button></md-radio-group></td></tr></tbody></table></md-table-container></li><li><div \nclass=\"about-section-text\"><p>\nList below key achievement / client feedback on your performance in relation to the founding philosophy (List the projects, Name of feedback provider (Client), brief description of your contribution)\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea ng-model=\"vm.feedBack\" \nmd-select-on-focus></textarea></md-input-container></div></li></ol></form></md-tab-body></md-tab><md-tab><md-tab-label>\n<span class=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" \nng-if=\"wizardStep5.$invalid\">5</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep5.$valid\">\n<i class=\"icon-check s16\"></i> </span><span class=\"ms-form-wizard-step-text\">Step 5</span></span></md-tab-label>\n<md-tab-body><form name=\"wizardStep5\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" \nlayout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Overall Assessment\n</h3></md-card><div class=\"about-section-text\"><p>Overall Performance Rating definition (Tick where appropriate)</p>\n</div><div class=\"overall\"><span>\n5 = Exceeds Expectations: Demonstrates this Performance Factor consistently above and beyond expectations</span><br>\n<span>\n4 = Meets Expectations: Effectively demonstrates the Performance Factor, all of the time, in all situations, consistently in line with expectations.\n</span><br><span>\n3 = Partially Meets Expectations: Effectively demonstrates the Performance Factor in many, but not all situations, and/or some improvement is .\n</span><br><span>\n2 = Does Not Meet Expectations: Has difficulty demonstrating this Performance Factor; significant improvement is . \n</span><br><span>\n1 = No Basis: had little opportunity to demonstrate this Performance Factor during the assessment period. </span><br>\n<span>\nN/A = Individual has not been in position long enough (at least three (3) months) to fully demonstrate the competencies for the position. This appraisal is provided for feedback purposes.\n</span><br></div><div layout=\"row\" layout-gt-xs=\"row\" class=\"page\" flex layout-align=\"space-around center\"><md-card \nclass=\"default header\" layout=\"column\" flex layout-align=\"center\"><md-radio-group layout=\"row\" \nng-checked=\"vm.collectionTypeChanged()\" ng-model=\"vm.assessment.overall\"><div flex=\"20\"><label>5</label>\n<md-radio-button value=\"5\"></md-radio-button></div><div flex=\"20\"><label>4</label><md-radio-button value=\"4\">\n</md-radio-button></div><div flex=\"20\"><label>3</label><md-radio-button value=\"3\"></md-radio-button></div><div \nflex=\"20\"><label>2</label><md-radio-button value=\"2\"></md-radio-button></div><div flex=\"20\"><label>1</label>\n<md-radio-button value=\"1\"></md-radio-button></div><div flex=\"20\"><label>N/A</label><md-radio-button value=\"0\">\n</md-radio-button></div></md-radio-group></md-card></div></form></md-tab-body></md-tab><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep6.$invalid\">6\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep6.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 6</span></span></md-tab-label><md-tab-body id=\"supplier-register\" \nclass=\"page\"><form name=\"wizardStep6\" class=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" \nlayout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>\nDevelopment Plan</h3></md-card><div class=\"about-section-text\"><p>\nDirections: Identify the areas where you would like to develop (either in terms of your knowledge, skills or performance) – this may relate to either your current position, or a future position (or both). Then describe what specific actions you will take to develop in that area. Finally indicate when you plan to complete this activity.\n</p></div><fieldset><legend>Performance Enhancement (Current Position)</legend><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\"><span class=\"\">*</span> Competences:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><textarea class=\"form-textarea\" md-no-asterisk type=\"text\" ng-model=\"vm.currentPosition.competences\">\n</textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label class=\"tiredlabel\">Actions:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><textarea md-no-asterisk type=\"text\" \nng-model=\"vm.currentPosition.actions\"></textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\">Due Date:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input \nmd-no-asterisk type=\"date\" name=\"dateOfBirth\" ng-model=\"vm.currentPosition.dueDate\"></md-input-container></div>\n</fieldset><fieldset><legend>Career Development (Future Positions)</legend><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\"><span class=\"\">*</span> Competences:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><textarea md-no-asterisk type=\"text\" ng-model=\"vm.futurePosition.competences\"></textarea>\n</md-input-container></div><div layout=\"row\"><div flex=\"20\"><label class=\"tiredlabel\">Actions:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><textarea md-no-asterisk type=\"text\" \nng-model=\"vm.futurePosition.actions\"></textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\">Due Date:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input \nmd-no-asterisk type=\"date\" name=\"dateOfBirth\" ng-model=\"vm.futurePosition.dueDate\"></md-input-container></div>\n</fieldset></form></md-tab-body></md-tab></md-tabs><div class=\"navigation\" flex layout=\"row\" \nlayout-align=\"center center\"><md-button class=\"md-raised md-accent\" ng-click=\"msWizard.previousStep()\" \nng-disabled=\"msWizard.isFirstStep()\">Previous</md-button><div class=\"steps\"><span ng-repeat=\"form in msWizard.forms\" \nng-class=\"{\'selected md-accent-bg\':msWizard.selectedIndex === $index}\"></span></div><md-button \nclass=\"md-raised md-accent\" ng-click=\"msWizard.nextStep()\" ng-hide=\"msWizard.isLastStep()\" \nng-disabled=\"msWizard.currentStepInvalid()\">Next</md-button><md-button class=\"md-raised md-warn\" \nng-click=\"vm.sendForm(); msWizard.resetForm();\" ng-show=\"msWizard.isLastStep()\" \nng-disabled=\"msWizard.formsIncomplete()\">Send</md-button></div></ms-form-wizard></div>");
+$templateCache.put("app/core/directives/ms-navigation/templates/vertical.html","<ul><li ng-repeat=\"node in vm.navigation\" ms-navigation-node=\"node\" \nng-class=\"{\'collapsed\': vm.collapsed, \'has-children\': vm.hasChildren}\" ng-include=\"\'navigation-nested.html\'\"></li></ul>\n<script type=\"text/ng-template\" id=\"navigation-nested.html\">\n<div ms-navigation-item layout=\"row\" ng-if=\"!vm.isHidden()\">\r\n\r\n      <div class=\"ms-navigation-button\" ng-if=\"!node.uisref && node.title\">\r\n          <i class=\"icon s16 {{node.icon}}\" ng-if=\"node.icon\"></i>\r\n          <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\r\n          <span class=\"badge white-fg\" ng-style=\"{\'background\': node.badge.color}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\r\n          <i class=\"icon-chevron-right s16 arrow\" ng-if=\"vm.collapsable && vm.hasChildren\"></i>\r\n      </div>\r\n\r\n      <a class=\"ms-navigation-button\" ui-sref=\"{{node.uisref}}\" ui-sref-active=\"active activeHover\"\r\n         ng-if=\"node.uisref && node.title\">\r\n          <i class=\"icon s16 {{node.icon}}\" ng-if=\"node.icon\"></i>\r\n          <span class=\"title\" translate=\"{{node.translate}}\" flex>{{node.title}}</span>\r\n          <span class=\"badge white-fg\" ng-style=\"{\'background\': node.badge.color}\" ng-if=\"node.badge\">{{node.badge.content}}</span>\r\n          <i class=\"icon-chevron-right s16 arrow\" ng-if=\"vm.collapsable && vm.hasChildren\"></i>\r\n      </a>\r\n\r\n  </div>\r\n\r\n  <ul ng-if=\"vm.hasChildren && !vm.isHidden()\">\r\n      <li ng-repeat=\"node in node.children\" ms-navigation-node=\"node\"\r\n          ng-class=\"{\'collapsed\': vm.collapsed, \'has-children\': vm.hasChildren}\"\r\n          ng-include=\"\'navigation-nested.html\'\"></li>\r\n  </ul>\n</script>");
+$templateCache.put("app/main/apps/appraisals/manageappraisal/manageappraisal.html","<div layout=\"row\" id=\"users\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"></md-card><fieldset><legend>View</legend>\n<md-radio-group layout=\"row\" layout-align=\"center space-between\" ng-model=\"vm.section\"><md-radio-button \nvalue=\"pending\">Pending List</md-radio-button><md-radio-button value=\"reviewd\">Reviewed List</md-radio-button>\n<md-radio-button value=\"approved\">Approved List</md-radio-button></md-radio-group></fieldset><div class=\"table\" \nstyle=\"margin:25px\"><md-table-container><table md-table md-row-select=\"options.rowSelection\" \nmultiple=\"{{options.multiSelect}}\" ng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" \nmd-head md-order=\"query.order\" md-on-reorder=\"logOrder\"><tr md-row><th md-column><span>Full Name</span></th><th \nmd-column><span>Email</span></th><th md-column><span>Line of Business</span></th><th md-column><span>Appraisal Date\n</span></th></tr></thead><tbody md-body><tr md-row md-select=\"user\" md-on-select=\"logItem\" \nmd-auto-select=\"options.autoSelect\" ng-repeat=\"user in users | filter: filter.search | orderBy: query.order \"><td \nmd-cell class=\"nameStlye\">{{user.firstname}} {{user.lastname}}</td><td md-cell>{{user.email}}</td><td md-cell>\n{{user.lob}}</td><td md-cell>{{user.appraisalDate}}</td><td md-cell><md-icon \nng-click=\"vm.getAppraisalDetails(user,$event,\'appraisalform.html\')\" \nmd-svg-src=\"./assets/icons/svg/view-list-button.svg\" class=\"button\">view</md-icon></td></tr></tbody></table>\n<md-table-pagination md-limit=\"query.limit\" md-limit-options=\"limitOptions\" md-page=\"query.page\" \nmd-total=\"{{employees.count}}\" md-page-select=\"options.pageSelect\" md-boundary-links=\"options.boundaryLinks\" \nmd-on-paginate=\"vm.getEmployeeList\"></md-table-pagination></md-table-container></div></div></div>");
+$templateCache.put("app/main/apps/appraisals/newappriasal/newappraisal.html","<md-progress-linear class=\"overlay\" ng-show=\"processingRequest\" md-mode=\"indeterminate\" ng-value=\"please\">\n</md-progress-linear><div layout=\"column\"><ms-form-wizard flex><md-tabs md-dynamic-height \nmd-selected=\"msWizard.selectedIndex\" md-center-tabs=\"true\"><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep1.$invalid\">1\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep1.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 1</span></span></md-tab-label><md-tab-body id=\"supplier-register\" \nclass=\"page\"><form name=\"wizardStep1\" class=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" \nlayout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>\nProfile</h3></md-card><fieldset class=\"profile-details-style\"><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\">\n<label class=\"tiredlabel\"><span class=\"\">*</span> Full Name:</label></div><md-input-container class=\"tiredinput\" \nflex=\"70\"><label></label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.FullName\"></md-input-container>\n</div><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\"><span class=\"\">*</span>\n Line of Business:</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label></label><md-select \nmd-no-asterisk name=\"lob\" ng-model=\"vm.profiledata.lob\"><md-option ng-repeat=\"lob in vm.lobs\" value=\"{{lob}}\">{{lob}}\n</md-option></md-select></md-input-container><div flex=\"20\"><label class=\"tiredlabel\">Location/based at:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"25\"><label></label><md-select md-no-asterisk name=\"location\" \nng-model=\"vm.profiledata.location\"><md-option ng-repeat=\"location in vm.locations\" \nvalue=\"{{location.state +\', \'+location.country}}\">{{location.state +\', \'+location.country}}</md-option></md-select>\n</md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\"><span \nclass=\"\">*</span> Year/period covered</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label></label>\n<input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.periodCovered\"></md-input-container><div flex=\"20\"><label \nclass=\"tiredlabel\">Time in present position:</label></div><md-input-container class=\"tiredinput\" flex=\"25\"><label>\n</label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.timeInPresentPosition\"></md-input-container></div>\n<div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\">Recruitment Date:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input md-no-asterisk type=\"date\" name=\"dateOfBirth\" \nng-model=\"vm.profiledata.recruitmentDate\"></md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div \nflex=\"20\"><label class=\"tiredlabel\">Length of service:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.lengthOfService\"></md-input-container></div>\n<div layout=\"row\" class=\"Profile-input\"><div flex=\"20\"><label class=\"tiredlabel\">Appraisal venue:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input md-no-asterisk type=\"text\" \nng-model=\"vm.profiledata.appraisalVenue\"></md-input-container></div><div layout=\"row\" class=\"Profile-input\"><div \nflex=\"20\"><label class=\"tiredlabel\">Appraiser:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label>\n</label><input md-no-asterisk type=\"text\" ng-model=\"vm.profiledata.appraiser\"></md-input-container></div></fieldset>\n</form></md-tab-body></md-tab><md-tab><md-tab-label><span class=\"ms-form-wizard-step-label\"><span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep2.$invalid\">2</span> <span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep2.$valid\"><i class=\"icon-check s16\"></i> </span><span \nclass=\"ms-form-wizard-step-text\">Step 2</span></span></md-tab-label><md-tab-body><form name=\"wizardStep2\" \nclass=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\">\n<h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Goals & Objectives</h3></md-card><div \nclass=\"about-section-text\"><p>\nBriefly describe your personal understanding and contributions to the overall objective of the organisation in 2017</p>\n</div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.objective.objectives\" md-select-on-focus></textarea></md-input-container></div></form></md-tab-body>\n</md-tab><md-tab><md-tab-label><span class=\"ms-form-wizard-step-label\"><span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep3.$invalid\">3</span> <span \nclass=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep3.$valid\"><i class=\"icon-check s16\"></i> </span><span \nclass=\"ms-form-wizard-step-text\">Step 3</span></span></md-tab-label><md-tab-body><form name=\"wizardStep3\" \nms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\">\n<md-icon md-font-icon=\"icon-content-paste\"></md-icon>Self Assessment</h3></md-card><ol><li class=\"number-list-tyle\">\n<div class=\"about-section-text aboutTextStyle\"><p>\nYour Job Summary: Provide a summary of your responsibilities during this period, including significant projects.</p>\n</div><ol class=\"romanStyle\"><li ng-repeat=\"jobsummary in vm.jobsummaries track by $index\"><div layout=\"row\">\n<md-input-container flex=\"70\" class=\"options-style\"><input md-no-asterisk type=\"text\" ng-model=\"jobsummary.summary\">\n</md-input-container><div flex=\"20\"><md-button class=\"delete_button\" aria-label=\"remove selected jobsummary\" \nng-click=\"vm.removeSelectedObject(jobsummary,\'jobsummary\')\"><md-icon md-svg-src=\"./assets/icons/svg/added/Delete.svg\" \nclass=\"deletebutton\"></md-icon></md-button></div></div></li></ol><div class=\"about-section-text\"><md-input-container \nflex=\"25\"><md-icon ng-click=\"vm.addNewObject(\'jobsummary\')\" md-svg-src=\"./assets/icons/svg/round-add-button.svg\" \nclass=\"button\"></md-icon></md-input-container></div></li><li class=\"number-list-tyle\"><div class=\"about-section-text\">\n<p>\nAdjusted Responsibilities/Additional Comments: Note any job changes, responsibilities, or projects added since the last update of your job description, plan of work or performance goals/objectives, as well as any special circumstances that provide a context for this performance review.\n</p></div><ol class=\"romanStyle\"><li ng-repeat=\"objective in vm.responsibilities track by $index\"><div layout=\"row\">\n<md-input-container flex=\"70\" class=\"options-style\"><input md-no-asterisk type=\"text\" ng-model=\"objective.comment\">\n</md-input-container><div flex=\"20\"><md-button aria-label=\"remove selected objective\" \nng-click=\"vm.removeSelectedObject(objective,\'responsibility\')\"><md-icon \nmd-svg-src=\"./assets/icons/svg/added/Delete.svg\" class=\"deletebutton\"></md-icon></md-button></div></div></li></ol><div \nclass=\"about-section-text\"><md-input-container flex=\"25\"><md-icon ng-click=\"vm.addNewObject(\'responsibility\')\" \nmd-svg-src=\"./assets/icons/svg/round-add-button.svg\" class=\"button\"></md-icon></md-input-container></div></li><li><div \nclass=\"about-section-text\"><p>\nPerformance Appraisal: Discuss and evaluate your performance against the firm’s objectives. Base your appraisal upon the job summary, adjusted responsibilities/additional comments and your performance goals for the performance cycle.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><ol><li><div class=\"p-appraisal-li\"><p>\nAccomplishment of key responsibilities/deliverables:</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex>\n<md-input-container flex=\"100\"><textarea ng-model=\"vm.performanceAppraisal.accomplishment\" md-select-on-focus>\n</textarea></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nAchievement of the goals established during the past year:</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex>\n<md-input-container flex=\"100\"><textarea ng-model=\"vm.performanceAppraisal.achievement\" md-select-on-focus></textarea>\n<div ng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIdentify areas of exceptional performance on your part that should be particularly noted. Provide specific examples.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.exceptionalPerformance\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIn your current position, can you share an example where you have demonstrated your leadership? Provide specific examples.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.leadership\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIn your current position, can you share an example where you have taken ownership? Provide specific examples.</p></div>\n<div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.ownership\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nIdentify areas of your performance needing more attention or improvement. Provide specific examples.</p></div><div \nlayout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.improvement\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li><li><div class=\"p-appraisal-li\"><p>\nApart from your current role, is there any other role in the organization you will like to function in? Please specify the role, state the reasons for your choice and articulate how you intend to contribute to the goal of the organization by functioning in this role.\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea \nng-model=\"vm.performanceAppraisal.anyOtherRole\" md-select-on-focus></textarea><div \nng-messages=\"wizardStep1.firstname.$error\" role=\"alert\"><div ng-message=\"\"><span>Firstname field is .</span></div>\n</div></md-input-container></div></li></ol></div></li></ol></form></md-tab-body></md-tab><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep4.$invalid\">4\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep4.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 4</span></span></md-tab-label><md-tab-body><form \nname=\"wizardStep4\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" layout-align=\"center\"><h3 \nclass=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Founding Philosophy</h3></md-card><ol><li \nclass=\"number-list-tyle\"><div class=\"about-section-text\"><p>\nPlease rate your level of understanding of and/or performance against the firm’s founding philosophy using the following metrics:\n</p><span class=\"about-section-text\">(4 = Exceptional 3 = Good 2 = Below Average 1 = Poor)</span></div>\n<md-table-container><table md-table md-row-select=\"options.rowSelection\" multiple=\"{{options.multiSelect}}\" \nng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" md-head md-order=\"query.order\" \nmd-on-reorder=\"logOrder\"><tr md-row><th md-column md-order-by=\"name\"><span>Creed </span></th><th md-column \nmd-order-by=\"type\"><span>Definitions</span></th><th md-column md-order-by=\"type\"><span>Ratings</span></th></tr></thead>\n<tbody md-body><tr md-row md-select=\"user\" md-on-select=\"logItem\" md-auto-select=\"options.autoSelect\" \nng-repeat=\"philosophy in vm.foundingPhilosophy\"><td md-cell>{{philosophy.name}}</td><td md-cell>\n{{philosophy.definition}}</td><td md-cell><md-radio-group layout=\"row\" layout-align=\"start center\" \nng-checked=\"vm.collectionTypeChanged()\" ng-model=\"philosophy.rating\"><md-radio-button value=\"4\">4</md-radio-button>\n<md-radio-button value=\"3\">3</md-radio-button><md-radio-button value=\"2\">2</md-radio-button><md-radio-button value=\"1\">\n1</md-radio-button></md-radio-group></td></tr></tbody></table></md-table-container></li><li><div \nclass=\"about-section-text\"><p>\nList below key achievement / client feedback on your performance in relation to the founding philosophy (List the projects, Name of feedback provider (Client), brief description of your contribution)\n</p></div><div layout=\"row\" layout-gt-xs=\"row\" flex><md-input-container flex=\"100\"><textarea ng-model=\"vm.feedBack\" \nmd-select-on-focus></textarea></md-input-container></div></li></ol></form></md-tab-body></md-tab><md-tab><md-tab-label>\n<span class=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" \nng-if=\"wizardStep5.$invalid\">5</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep5.$valid\">\n<i class=\"icon-check s16\"></i> </span><span class=\"ms-form-wizard-step-text\">Step 5</span></span></md-tab-label>\n<md-tab-body><form name=\"wizardStep5\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" layout=\"column\" \nlayout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>Overall Assessment\n</h3></md-card><div class=\"about-section-text\"><p>Overall Performance Rating definition (Tick where appropriate)</p>\n</div><div class=\"overall\"><span>\n5 = Exceeds Expectations: Demonstrates this Performance Factor consistently above and beyond expectations</span><br>\n<span>\n4 = Meets Expectations: Effectively demonstrates the Performance Factor, all of the time, in all situations, consistently in line with expectations.\n</span><br><span>\n3 = Partially Meets Expectations: Effectively demonstrates the Performance Factor in many, but not all situations, and/or some improvement is .\n</span><br><span>\n2 = Does Not Meet Expectations: Has difficulty demonstrating this Performance Factor; significant improvement is . \n</span><br><span>\n1 = No Basis: had little opportunity to demonstrate this Performance Factor during the assessment period. </span><br>\n<span>\nN/A = Individual has not been in position long enough (at least three (3) months) to fully demonstrate the competencies for the position. This appraisal is provided for feedback purposes.\n</span><br></div><div layout=\"row\" layout-gt-xs=\"row\" class=\"page\" flex layout-align=\"space-around center\"><md-card \nclass=\"default header\" layout=\"column\" flex layout-align=\"center\"><md-radio-group layout=\"row\" \nng-checked=\"vm.collectionTypeChanged()\" ng-model=\"vm.assessment.overall\"><div flex=\"20\"><label>5</label>\n<md-radio-button value=\"5\"></md-radio-button></div><div flex=\"20\"><label>4</label><md-radio-button value=\"4\">\n</md-radio-button></div><div flex=\"20\"><label>3</label><md-radio-button value=\"3\"></md-radio-button></div><div \nflex=\"20\"><label>2</label><md-radio-button value=\"2\"></md-radio-button></div><div flex=\"20\"><label>1</label>\n<md-radio-button value=\"1\"></md-radio-button></div><div flex=\"20\"><label>N/A</label><md-radio-button value=\"0\">\n</md-radio-button></div></md-radio-group></md-card></div></form></md-tab-body></md-tab><md-tab><md-tab-label><span \nclass=\"ms-form-wizard-step-label\"><span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep6.$invalid\">6\n</span> <span class=\"ms-form-wizard-step-number md-accent-bg\" ng-if=\"wizardStep6.$valid\"><i class=\"icon-check s16\"></i>\n </span><span class=\"ms-form-wizard-step-text\">Step 6</span></span></md-tab-label><md-tab-body id=\"supplier-register\" \nclass=\"page\"><form name=\"wizardStep6\" class=\"md-inline-form\" ms-form-wizard-form novalidate><md-card id=\"defaultcard\" \nlayout=\"column\" layout-align=\"center\"><h3 class=\"PanelStyle\"><md-icon md-font-icon=\"icon-content-paste\"></md-icon>\nDevelopment Plan</h3></md-card><div class=\"about-section-text\"><p>\nDirections: Identify the areas where you would like to develop (either in terms of your knowledge, skills or performance) – this may relate to either your current position, or a future position (or both). Then describe what specific actions you will take to develop in that area. Finally indicate when you plan to complete this activity.\n</p></div><fieldset><legend>Performance Enhancement (Current Position)</legend><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\"><span class=\"\">*</span> Competences:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><textarea class=\"form-textarea\" md-no-asterisk type=\"text\" ng-model=\"vm.currentPosition.competences\">\n</textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label class=\"tiredlabel\">Actions:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><textarea md-no-asterisk type=\"text\" \nng-model=\"vm.currentPosition.actions\"></textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\">Due Date:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input \nmd-no-asterisk type=\"date\" name=\"dateOfBirth\" ng-model=\"vm.currentPosition.dueDate\"></md-input-container></div>\n</fieldset><fieldset><legend>Career Development (Future Positions)</legend><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\"><span class=\"\">*</span> Competences:</label></div><md-input-container class=\"tiredinput\" flex=\"70\">\n<label></label><textarea md-no-asterisk type=\"text\" ng-model=\"vm.futurePosition.competences\"></textarea>\n</md-input-container></div><div layout=\"row\"><div flex=\"20\"><label class=\"tiredlabel\">Actions:</label></div>\n<md-input-container class=\"tiredinput\" flex=\"70\"><label></label><textarea md-no-asterisk type=\"text\" \nng-model=\"vm.futurePosition.actions\"></textarea></md-input-container></div><div layout=\"row\"><div flex=\"20\"><label \nclass=\"tiredlabel\">Due Date:</label></div><md-input-container class=\"tiredinput\" flex=\"70\"><label></label><input \nmd-no-asterisk type=\"date\" name=\"dateOfBirth\" ng-model=\"vm.futurePosition.dueDate\"></md-input-container></div>\n</fieldset></form></md-tab-body></md-tab></md-tabs><div class=\"navigation\" flex layout=\"row\" \nlayout-align=\"center center\"><md-button class=\"md-raised md-accent\" ng-click=\"msWizard.previousStep()\" \nng-disabled=\"msWizard.isFirstStep()\">Previous</md-button><div class=\"steps\"><span ng-repeat=\"form in msWizard.forms\" \nng-class=\"{\'selected md-accent-bg\':msWizard.selectedIndex === $index}\"></span></div><md-button \nclass=\"md-raised md-accent\" ng-click=\"msWizard.nextStep()\" ng-hide=\"msWizard.isLastStep()\" \nng-disabled=\"msWizard.currentStepInvalid()\">Next</md-button><md-button class=\"md-raised md-warn\" \nng-click=\"vm.sendForm(); msWizard.resetForm();\" ng-show=\"msWizard.isLastStep()\" \nng-disabled=\"msWizard.formsIncomplete()\">Send</md-button></div></ms-form-wizard></div>");
 $templateCache.put("app/main/apps/settings/employeelist/employeelist.html","<div layout=\"row\" id=\"users\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"><h3></h3></md-card><fieldset><legend>\nDownload Template</legend><div layout=\"row\"><md-button class=\"md-accent md-raised\" ng-click=\"vm.downloadTemlate()\">\nDownload Template</md-button></div></fieldset><fieldset><legend>Upload Template</legend><md-input-container><label \nfor=\"excelFile\"></label><input id=\"excelFileInput\" accept=\".xls,.xlsx\" type=\"file\" import-from-excel>\n</md-input-container><md-button class=\"md-accent md-raised\" id=\"employeelistupload\" ng-click=\"vm.uploadTemlate()\">\nUpload Template</md-button></fieldset><fieldset><legend>Employees</legend><md-table-container><table md-table \nmd-row-select=\"options.rowSelection\" ng-model=\"selected\" md-progress=\"promise\"><thead ng-if=\"!options.decapitate\" \nmd-head md-order=\"query.order\" md-on-reorder=\"logOrder\"><tr md-row><th md-column md-order-by=\"name\"><span>First Name \n</span></th><th md-column md-order-by=\"type\"><span>Last Name</span></th><th md-column md-desc><span>Email</span></th>\n<th md-column><span>Role</span></th><th md-column><span>Line of Business</span></th></tr></thead><tbody md-body><tr \nmd-row md-select=\"user\" md-on-select=\"logItem\" md-auto-select=\"options.autoSelect\" \nng-repeat=\"user in employees | filter: filter.search | orderBy: query.order \"><td md-cell>{{user.firstname}}</td><td \nmd-cell>{{user.lastname}}</td><td md-cell>{{user.email}}</td><td md-cell>{{user.roleName}}</td><td md-cell>{{user.lob}}\n</td></tr></tbody></table></md-table-container></fieldset></div></div>");
 $templateCache.put("app/main/apps/settings/login/login.html","<md-progress-linear class=\"overlay\" ng-show=\"processingRequest\" md-mode=\"indeterminate\" ng-value=\"please\">\n</md-progress-linear><div id=\"login-v2\" layout=\"row\" layout-align=\"start\"><div id=\"login-v2-intro\" flex hide \nshow-gt-sm><div class=\"title\"><img src=\"./assets/images/logos/logo-white.png\"></div></div><div \nng-show=\"processingRequest\" id=\"image-loading\"><div class=\"center\"><center><img \nsrc=\"./assets/images/logos/logo-white.png\"></center><div class=\"spinner-wrapper\"><div class=\"spinner\"><div \nclass=\"inner\"><div class=\"gap\"></div><div class=\"left\"><div class=\"half-circle\"></div></div><div class=\"right\"><div \nclass=\"half-circle\"></div></div></div></div></div></div></div><div id=\"login-v2-form-wrapper\" \nclass=\"flex-scrollable md-whiteframe-8dp\" ms-scroll><div id=\"login-v2-form\"><div class=\"logo md-accent-bg\" hide-gt-sm>\n<span><img src=\"./assets/images/logos/logo-white.png\"></span></div><div class=\"title\" translate=\"LOGIN_V2.TITLE\"></div>\n<form name=\"loginForm\" novalidate><md-input-container class=\"md-block\" md-no-float><input type=\"text\" \nng-model=\"vm.username\" translate translate-attr-placeholder=\"LOGIN_V2.USERNAME\" autocomplete=\"off\" required>\n</md-input-container><md-input-container class=\"md-block\" md-no-float><input type=\"password\" ng-model=\"vm.password\" \ntranslate translate-attr-placeholder=\"LOGIN_V2.PASSWORD\" required></md-input-container><md-button \nclass=\"md-raised md-accent submit-button\" type=\"submit\" aria-label=\"LOG IN\" ng-readonly=\"processingRequest\" \nng-disabled=\"processingRequest|| loginForm.$invalid || loginForm.$pristine\" ng-click=\"vm.login()\" \ntranslate=\"LOGIN_V2.LOG_IN\" translate-attr-aria-label=\"LOGIN_V2.LOG_IN\"></md-button><md-button ng-show=\"false\" \ntranslate=\"LOGIN_V2.CLEAR_STORAGE\" class=\"md-raised md-accent submit-button\" aria-label=\"LOG IN\" ng-click=\"vm.clear()\">\n</md-button></form></div></div></div>");
 $templateCache.put("app/main/apps/settings/passwordchange/passwordchange.html","<div layout=\"row\" id=\"passwordChange\" ng-cloak=\"\" layout-fill><div layout=\"column\" class=\"page\" flex><md-card \nclass=\"default header\" layout=\"column\" layout-align=\"center left\"><h3><md-icon md-font-icon=\"icon-content-paste\">\n</md-icon></h3></md-card><md-content class=\"body\" layout=\"column\" flex layout-padding layout-margin ms-scroll><form \nnovalidate name=\"passwordChange\"><fieldset><div layout=\"row\"><div flex=\"15\"><label class=\"label\">Current Password:\n</label></div><md-input-container flex=\"15\"><label></label><input md-no-asterisk type=\"text\" type=\"password\" \nname=\"oldpassword\" ng-model=\"vm.passwordChange.OldPassword\" required></md-input-container><div flex=\"20\"><label \nclass=\"label\">New Password:</label></div><md-input-container flex=\"15\"><label></label><input md-no-asterisk \ntype=\"password\" name=\"password\" ng-model=\"vm.passwordChange.Password\" required></md-input-container><div flex=\"20\">\n<label class=\"label\">Confirm Password:</label></div><md-input-container flex=\"15\"><label></label><input md-no-asterisk \ntype=\"password\" name=\"password_confirmation\" confirm-pwd=\"vm.passwordChange.Password\" \nng-model=\"vm.passwordChange.ConfirmPassword\" required><div class=\"form-errors\" \nng-messages=\"passwordChange.password_confirmation.$error\" ng-if=\"passwordChange.password_confirmation.$touched\"><span \nclass=\"form-error\" ng-message=\"password\">Password does not match</span></div></md-input-container><md-button \nclass=\"md-raised md-accent\" ng-disabled=\"passwordChange.$invalid || passwordChange.$pristine\" \nng-click=\"vm.changePassword()\" flex=\"10\">Add</md-button></div></fieldset></form></md-content></div></div>");
 $templateCache.put("app/main/apps/settings/register/register.html","<div id=\"register-v2\" layout=\"row\" layout-align=\"start\"><div id=\"register-v2-intro\" flex hide show-gt-sm><div \nclass=\"title\"><img src=\"./assets/images/logos/logo-white.png\"></div></div><div id=\"register-v2-form-wrapper\" \nclass=\"flex-scrollable md-whiteframe-8dp\" layout=\"column\" flex ms-scroll><div id=\"register-v2-form\"><div \nclass=\"logo md-accent-bg\" hide-gt-sm><span>F</span></div><div class=\"title\" translate=\"REGISTER_V2.TITLE\"></div><form \nname=\"registerForm\" novalidate ng-submit=\"vm.registerUser()\"><md-input-container class=\"md-block\" md-no-float><input \nname=\"username\" ng-model=\"vm.form.firstname\" placeholder=\"First Name\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.FIRSTNAME\" required><div ng-messages=\"registerForm.username.$error\" \nrole=\"alert\"><div ng-message=\"required\"><span translate=\"REGISTER_V2.ERRORS.FIRSTNAME_REQUIRED\">\nFirst name field is required</span></div></div></md-input-container><md-input-container class=\"md-block\" md-no-float>\n<input name=\"username\" ng-model=\"vm.form.lastname\" placeholder=\"Last Name\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.LASTNAME\" required><div ng-messages=\"registerForm.username.$error\" \nrole=\"alert\"><div ng-message=\"required\"><span translate=\"REGISTER_V2.ERRORS.LASTNAME_REQUIRED\">\nLast name field is required</span></div></div></md-input-container><md-input-container class=\"md-block\" md-no-float>\n<input type=\"email\" name=\"email\" ng-model=\"vm.form.email\" placeholder=\"Email\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.EMAIL\" ng-pattern=\"/^.+@.+\\..+$/\" required><div \nng-messages=\"registerForm.email.$error\" role=\"alert\" multiple=\"multiple\"><div ng-message=\"required\"><span \ntranslate=\"REGISTER_V2.ERRORS.EMAIL_REQUIRED\">Email field is required</span></div><div ng-message=\"pattern\"><span \ntranslate=\"REGISTER_V2.ERRORS.EMAIL_MUST_VALID\">Email must be a valid e-mail address</span></div></div>\n</md-input-container><md-input-container class=\"md-block\" md-no-float><input type=\"password\" name=\"password\" \nng-model=\"vm.form.password\" placeholder=\"Password\" translate translate-attr-placeholder=\"REGISTER_V2.PASSWORD\" \nrequired><div ng-messages=\"registerForm.password.$error\" role=\"alert\"><div ng-message=\"required\"><span \ntranslate=\"REGISTER_V2.ERRORS.PASSWORD_REQUIRED\">Password field is required</span></div></div></md-input-container>\n<md-input-container class=\"md-block\" md-no-float><input type=\"password\" name=\"passwordConfirm\" \nng-model=\"vm.form.passwordConfirm\" placeholder=\"Password (Confirm)\" confirm-pwd=\"vm.form.password\" translate \ntranslate-attr-placeholder=\"REGISTER_V2.PASSWORD_CONFIRM\" required><div \nng-messages=\"registerForm.passwordConfirm.$error\" role=\"alert\"><div ng-message=\"required\"><span \ntranslate=\"REGISTER_V2.ERRORS.PASSWORD_CONFIRM_REQUIRED\">Password (Confirm) field is required</span></div></div><div \nclass=\"form-errors\" ng-messages=\"registerForm.passwordConfirm.$error\" ng-if=\"registerForm.passwordConfirm.$touched\">\n<span class=\"form-error\" ng-message=\"password\">Password does not match</span></div></md-input-container><div \nclass=\"terms\" layout=\"row\" layout-align=\"center center\"><md-checkbox name=\"terms\" ng-model=\"data.cb1\" \naria-label=\"I read and accept\" required></md-checkbox><div layout=\"row\" layout-sm=\"column\" layout-align=\"start center\">\n<span translate=\"REGISTER_V2.READ_ACCEPT\">I read and accept</span> <a href=\"#\" class=\"md-accent-color\" \ntranslate=\"REGISTER_V2.TERMS_COND\">terms and conditions</a></div></div><md-button type=\"submit\" \nclass=\"md-raised md-accent submit-button\" aria-label=\"CREATE MY ACCOUNT\" \nng-disabled=\"registerForm.$invalid || registerForm.$pristine\" translate=\"REGISTER_V2.CREATE_ACCOUNT\" \ntranslate-attr-aria-label=\"REGISTER_V2.CREATE_ACCOUNT\">CREATE MY ACCOUNT</md-button></form><div class=\"login\" \nlayout=\"row\" layout-sm=\"column\" layout-align=\"center center\"><span class=\"text\" translate=\"REGISTER_V2.ALREADY_HAVE\">\nAlready have an account?</span> <a class=\"link\" ui-sref=\"app.pages_auth_login-v2\" translate=\"REGISTER_V2.LOGIN\">Log in\n</a></div></div></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-1/template-1.html","<div class=\"template-1\"><div class=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" \nalt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div><div class=\"content pv-24 ph-16\"><div class=\"title h1\" \nng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">{{card.subtitle}}\n</div><div class=\"text pt-16\" ng-if=\"card.text\">{{card.text}}</div></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-10/template-10.html","<div class=\"template-10 p-16\"><div class=\"pb-16\" layout=\"row\" layout-align=\"space-between center\"><div class=\"info\">\n<div class=\"title secondary-text\" ng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle h2\" \nng-if=\"card.subtitle\">{{card.subtitle}}</div></div><div class=\"media ml-16\"><img class=\"image\" \nng-src=\"{{card.media.image.src}}\" alt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div></div><div \nclass=\"text\">{{card.text}}</div></div>");
-$templateCache.put("app/core/directives/ms-card/templates/template-2/template-2.html","<div class=\"template-2\"><div class=\"header p-16\" layout=\"row\" layout-align=\"start center\"><div ng-if=\"card.avatar\"><img\n class=\"avatar mr-16\" ng-src=\"{{card.avatar.src}}\" alt=\"{{card.avatar.alt}}\"></div><div class=\"info\"><div \nclass=\"title\" ng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">\n{{card.subtitle}}</div></div></div><div class=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" \nalt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div><div class=\"text p-16\" ng-if=\"card.text\">{{card.text}}\n</div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-3/template-3.html","<div class=\"template-3 p-16 teal-bg white-fg\" layout=\"row\" layout-align=\"space-between\"><div layout=\"column\" \nlayout-align=\"space-between\"><div class=\"info\"><div class=\"title h1\" ng-if=\"card.title\">{{card.title}}</div><div \nclass=\"subtitle h3 secondary-text\" ng-if=\"card.subtitle\">{{card.subtitle}}</div></div><div class=\"cta\"><md-button \nclass=\"m-0\">{{card.cta}}</md-button></div></div><div class=\"media pl-16\"><img class=\"image\" \nng-src=\"{{card.media.image.src}}\" alt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div></div>");
+$templateCache.put("app/core/directives/ms-card/templates/template-2/template-2.html","<div class=\"template-2\"><div class=\"header p-16\" layout=\"row\" layout-align=\"start center\"><div ng-if=\"card.avatar\"><img\n class=\"avatar mr-16\" ng-src=\"{{card.avatar.src}}\" alt=\"{{card.avatar.alt}}\"></div><div class=\"info\"><div \nclass=\"title\" ng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">\n{{card.subtitle}}</div></div></div><div class=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" \nalt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div><div class=\"text p-16\" ng-if=\"card.text\">{{card.text}}\n</div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-4/template-4.html","<div class=\"template-4\"><div class=\"info white-fg ph-16 pv-24\"><div class=\"title h1\" ng-if=\"card.title\">{{card.title}}\n</div><div class=\"text\" ng-if=\"card.text\">{{card.text}}</div></div><div class=\"media\"><img class=\"image\" \nng-src=\"{{card.media.image.src}}\" alt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div></div>");
-$templateCache.put("app/core/directives/ms-card/templates/template-5/template-5.html","<div class=\"template-5 p-16\" layout=\"row\" layout-align=\"space-between start\"><div class=\"info\"><div \nclass=\"title secondary-text\" ng-if=\"card.title\">{{card.title}}</div><div class=\"event h2\" ng-if=\"card.event\">\n{{card.event}}</div></div><div class=\"media ml-16\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" \nalt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-6/template-6.html","<div class=\"template-6\"><div class=\"content pv-24 ph-16\"><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">\n{{card.subtitle}}</div><div class=\"title h2\" ng-if=\"card.title\">{{card.title}}</div><div class=\"text pt-8\" \nng-if=\"card.text\">{{card.text}}</div></div></div>");
+$templateCache.put("app/core/directives/ms-card/templates/template-5/template-5.html","<div class=\"template-5 p-16\" layout=\"row\" layout-align=\"space-between start\"><div class=\"info\"><div \nclass=\"title secondary-text\" ng-if=\"card.title\">{{card.title}}</div><div class=\"event h2\" ng-if=\"card.event\">\n{{card.event}}</div></div><div class=\"media ml-16\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" \nalt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-7/template-7.html","<div class=\"template-7\" layout=\"row\" layout-align=\"space-between\"><div class=\"info\" layout=\"column\" \nlayout-align=\"space-between\" layout-fill flex><div class=\"p-16\"><div class=\"title h1\" ng-if=\"card.title\">{{card.title}}\n</div><div class=\"subtitle h4 secondary-text\" ng-if=\"card.subtitle\">{{card.subtitle}}</div><div class=\"text h4 pt-8\" \nng-if=\"card.text\">{{card.text}}</div></div><div><md-divider></md-divider><div class=\"p-8\" layout=\"row\"><md-icon \nmd-font-icon=\"icon-star-outline\" class=\"mh-5\"></md-icon><md-icon md-font-icon=\"icon-star-outline\" class=\"mh-5\">\n</md-icon><md-icon md-font-icon=\"icon-star-outline\" class=\"mh-5\"></md-icon><md-icon md-font-icon=\"icon-star-outline\" \nclass=\"mh-5\"></md-icon><md-icon md-font-icon=\"icon-star-outline\" class=\"mh-5\"></md-icon></div></div></div><div \nclass=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" alt=\"{{card.media.image.alt}}\" \nng-show=\"card.media.image\"></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-8/template-8.html","<div class=\"template-8\"><div class=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" \nalt=\"{{card.media.image.alt}}\" ng-show=\"card.media.image\"></div><div class=\"content pv-24 ph-16\"><div class=\"title h1\" \nng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">{{card.subtitle}}\n</div><div class=\"buttons pt-16\"><md-button class=\"m-0\">{{card.button1}}</md-button><md-button class=\"m-0 md-accent\">\n{{card.button2}}</md-button></div><div class=\"text pt-16\" ng-if=\"card.text\">{{card.text}}</div></div></div>");
 $templateCache.put("app/core/directives/ms-card/templates/template-9/template-9.html","<div class=\"template-9\"><div class=\"header p-16\" layout=\"row\" layout-align=\"start center\"><div ng-if=\"card.avatar\"><img\n class=\"avatar mr-16\" ng-src=\"{{card.avatar.src}}\" alt=\"{{card.avatar.alt}}\"></div><div class=\"info\"><div \nclass=\"title\" ng-if=\"card.title\">{{card.title}}</div><div class=\"subtitle secondary-text\" ng-if=\"card.subtitle\">\n{{card.subtitle}}</div></div></div><div class=\"text ph-16 pb-16\" ng-if=\"card.text\">{{card.text}}</div><div \nclass=\"media\"><img class=\"image\" ng-src=\"{{card.media.image.src}}\" alt=\"{{card.media.image.alt}}\" \nng-show=\"card.media.image\"></div><div class=\"buttons m-8\"><md-button class=\"md-icon-button mr-16\" \naria-label=\"Favorite\"><md-icon md-font-icon=\"icon-heart-outline\" class=\"s24\"></md-icon></md-button><md-button \nclass=\"md-icon-button\" aria-label=\"Share\"><md-icon md-font-icon=\"icon-share\" class=\"s24\"></md-icon></md-button></div>\n</div>");
 $templateCache.put("app/core/directives/ms-stepper/templates/horizontal/horizontal.html","<div class=\"ms-stepper-horizontal\"><div class=\"ms-stepper-navigation-wrapper\"><div class=\"ms-stepper-navigation\" \nlayout=\"row\" layout-align=\"center center\"><md-button class=\"ms-stepper-navigation-item\" \nng-class=\"{\'current\': MsStepper.isStepCurrent(step.stepNumber), \'valid\': MsStepper.isStepValid(step.stepNumber), \'disabled\': MsStepper.isStepDisabled(step.stepNumber), \'optional\': MsStepper.isStepOptional(step.stepNumber)}\" \nng-click=\"MsStepper.gotoStep(step.stepNumber)\" ng-disabled=\"MsStepper.isStepDisabled(step.stepNumber)\" \nng-repeat=\"step in MsStepper.steps\" layout=\"row\" layout-align=\"start center\"><div class=\"step md-accent-bg\" \nlayout=\"row\" layout-align=\"center center\"><span \nng-if=\"!MsStepper.isStepValid(step.stepNumber) || MsStepper.isStepOptional(step.stepNumber)\">{{step.stepNumber}} \n</span><span ng-if=\"MsStepper.isStepValid(step.stepNumber) && !MsStepper.isStepOptional(step.stepNumber)\"><i \nclass=\"icon icon-check s18\"></i></span></div><div layout=\"column\" layout-align=\"start start\"><div class=\"title\">\n{{step.stepTitle|translate}}</div><div class=\"subtitle\" ng-if=\"MsStepper.isStepOptional(step.stepNumber)\">Optional\n</div></div></md-button></div></div><div class=\"ms-stepper-steps\" ng-transclude></div><div class=\"ms-stepper-controls\" \nlayout=\"row\" layout-align=\"center center\"><md-button class=\"md-accent md-raised\" ng-disabled=\"MsStepper.isFirstStep()\" \nng-click=\"MsStepper.gotoPreviousStep()\">Back</md-button><div class=\"ms-stepper-dots\"><span \nng-repeat=\"step in MsStepper.steps\" ng-class=\"{\'selected md-accent-bg\':MsStepper.currentStepNumber === $index + 1}\">\n</span></div><md-button class=\"md-accent md-raised\" ng-if=\"!MsStepper.isLastStep()\" \nng-disabled=\"!MsStepper.isStepValid(MsStepper.currentStepNumber)\" ng-click=\"MsStepper.gotoNextStep()\">Next</md-button>\n<md-button type=\"submit\" class=\"md-accent md-raised\" ng-click=\"MsStepper.resetForm()\" ng-if=\"MsStepper.isLastStep()\" \nng-disabled=\"!MsStepper.isFormValid()\">Submit</md-button></div></div>");}]);
-//# sourceMappingURL=../maps/scripts/app-594d0c57c1.js.map
+//# sourceMappingURL=../maps/scripts/app-285fb16d08.js.map
