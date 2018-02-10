@@ -1,10 +1,11 @@
 {
-    "LOGIN_V2": {
+    "LOGIN": {
         "INTRO_TITLE": "",
         "INTRO_DESCRIPTION": "We are the go-to outsourcing services provider in Nigeria.",
         "TITLE": "Log in to your account",
+        "EMAIL":"Email",
         "DESCRIPTION": "Sed mollis velit facilisis facilisis viverra",
-        "USERNAME": "Username",
+        "USERNAME": "Email",
         "PASSWORD": "Password",
         "REMEMBER_ME": "Remember Me",
         "FORGOT_PASSWORD": "Forgot Password?",
